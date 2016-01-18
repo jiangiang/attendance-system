@@ -1,5 +1,5 @@
 /**
- *
+ * Javascript to be included in custom_attendance
  */
 var post_url;
 var activation_url;
