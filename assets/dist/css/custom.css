@@ -1,0 +1,44 @@
+/**
+ * 	To override some bootstrap css properties
+ * */
+
+.table-striped > tbody > tr:nth-of-type(even) {
+	background-color: #eacebe;
+}
+
+.table > thead > tr > th {
+
+	background-color: #bc6b3c;
+	text-align: center;
+	color: #FFFFFF
+}
+
+.table > tbody > tr > td {
+	font-weight: bold;
+	font-size: 14px;
+	text-align: center;
+}
+
+.table > tfoot > tr > td {
+	background-color: #f9f9f9;
+}
+
+.box-header, .box-body {
+	padding: 5px;
+}
+
+.content-header {
+	padding-top: 5px
+}
+
+.box {
+	margin-bottom: 5px;
+}
+.form-group {
+	padding-bottom: 1px;
+	margin-bottom: 1px;
+}
+.content {
+	padding-top: 5px;
+}
+
