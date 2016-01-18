@@ -178,12 +178,15 @@ class Model_course extends CI_Model {
 		$data['error'] = false;
 
 		// validation check if user use some unexpected method to submit without fulfil these field.
-		if (!isset($lessonVenue) || !isset($courseLevel) ||  !isset($courseDay) || !isset($schedule_id) || !isset($courseInstructor)) {
+		if (!isset($lessonVenue) || !isset($courseLevel) ||  !isset($courseDay) || !isset($schedule_id)) {
 			$data['error'] = true;
 			$data['message'] = "Please check your fill again.";
 			return json_encode($data);
 		}
-		
+
+		if(!isset($courseInstructor)){
+			$courseInstructor = "";
+		}
 		// =============================================================
 		// verify the instructor has been arranged for particular slot
 		// =============================================================
