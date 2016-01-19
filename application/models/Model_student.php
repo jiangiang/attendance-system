@@ -198,12 +198,13 @@ class Model_student extends CI_Model {
 		$lessonVenue = $this -> input -> post('lessonVenue');
 		$lessonDay = $this -> input -> post('lessonDay');
 		$courseID = $this -> input -> post('lessonTime');
+		$dob = $this->input->post('dob');
 
 		// Assume there is no error
 		$data['error'] = false;
 
 		// validation check if user use some unexpected method to submit without fulfil these field.
-		if (empty($stdName) || empty($stdGender) || empty($stdContact) || empty($courseID)) {
+		if (empty($stdName) || empty($stdGender) || empty($stdContact) || empty($courseID) || !isset($dob)) {
 			$data['error'] = true;
 			$data['message'] = "Please check your fill again.";
 			return json_encode($data);
@@ -237,8 +238,8 @@ class Model_student extends CI_Model {
 		//
 		//
 		if ($data['error'] == false) {
-			$insertValues = array(strtoupper($stdName), $stdID, $stdGender, $stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, 'A');
-			$sqlStr = "INSERT INTO student_info (std_name, std_identity, std_gender, std_contact, std_email, guardian_name, guardian_gender, guardian_contact, addr_building, addr_street, addr_postkod, addr_city, addr_state, addr_country, course_id, std_status) VALUES";
+			$insertValues = array(strtoupper($stdName), $stdID, $stdGender, $stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, 'A', $dob);
+			$sqlStr = "INSERT INTO student_info (std_name, std_identity, std_gender, std_contact, std_email, guardian_name, guardian_gender, guardian_contact, addr_building, addr_street, addr_postkod, addr_city, addr_state, addr_country, course_id, std_status, dob) VALUES";
 			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			if ($this -> db -> query($sqlStr, $insertValues)) {
 				$data['error'] = false;

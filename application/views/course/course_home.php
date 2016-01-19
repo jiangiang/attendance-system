@@ -38,7 +38,7 @@
 						</div>
 						<div class="form-group">
 							<label>Insturctor</label>
-							<select class="form-control" id="courseInstructor" name="courseInstructor" required="required">
+							<select class="form-control" id="courseInstructor" name="courseInstructor">
 								<option value="" selected disabled>Please select an option...</option>
 								<?php foreach($instructor_list as $row){ ?>
 								<option value="<?php echo $row['id'];?>"><?php echo $row['name']?></option>
