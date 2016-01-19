@@ -1,5 +1,5 @@
 /**
- *
+ *  js script for course
  */
 var post_url;
 var activation_url;
