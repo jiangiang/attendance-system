@@ -58,9 +58,8 @@ class Model_finance extends CI_Model {
 
 	public function search_name($searchText) {
 		$searchText = urldecode($searchText);
-		$sql = "SELECT s.id, std_name, std_identity
-				FROM student_info s
-				LEFT JOIN course_info c ON s.course_id = c.id
+		$sql = "SELECT id, std_name, std_identity
+				FROM student_info 
 				WHERE id LIKE '%" . $searchText . "%' OR std_name LIKE '%" . $searchText . "%' OR std_identity LIKE '%" . $searchText . "%'";
 
 		if ($query = $this -> db -> query($sql)) {
