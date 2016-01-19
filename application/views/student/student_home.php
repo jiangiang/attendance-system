@@ -262,9 +262,9 @@
                                 <th>ID</th>
                                 <th>Action</th>
                                 <th>Name</th>
+                                <th>Age</th>
                                 <th>IC/Passport</th>
                                 <th>Contact</th>
-                                <th>Course ID</th>
                                 <th>Course Day</th>
                                 <th>Course Time</th>
                             </tr>
@@ -280,9 +280,9 @@
                                         <a href="#" class="showDetails"><i class="fa fa-info-circle fa-lg"></i></a>
                                     </td>
                                     <td id="student_name"><?php echo $row['std_name']; ?></td>
+                                    <td><?php echo (date('Y') - date('Y',strtotime($row['dob']))); ?></td>
                                     <td><?php echo $row['std_identity']; ?></td>
                                     <td><?php echo $row['std_contact']; ?></td>
-                                    <td><?php echo $row['course_id']; ?></td>
                                     <td><?php echo date('l', strtotime("Sunday +" . $row['slot_day'] . " Days")); ?></td>
                                     <td><?php echo $row['slot_time']; ?></td>
                                 </tr>

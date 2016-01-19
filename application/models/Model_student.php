@@ -18,7 +18,8 @@ class Model_student extends CI_Model {
 		if (isset($name) && $name != "") {
 			$whereClause = $whereClause . "s.std_name like '%" . strtoupper($name) . "%' AND ";
 		}
-		$sql = "select s.*, cs.*, c.id as course_id, slot_time, slot_day from student_info s
+		$sql = "select s.*, cs.*, c.id as course_id, slot_time, slot_day
+				FROM student_info s
 				LEFT JOIN course_info c ON c.id = s.course_id 
 				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
 				WHERE " . $whereClause . "s.std_status='A' LIMIT 100";
@@ -56,7 +57,7 @@ class Model_student extends CI_Model {
 
 	// Model to get venue from db
 	public function get_venue_code() {
-		$sql = "SELECT *, (CASE WHEN venue_id = (SELECT default_venue FROM system_profile WHERE id=1) THEN 'Y' ELSE 'N' END) AS default_place 
+		$sql = "SELECT *, (CASE WHEN venue_id = (SELECT default_venue FROM system_profile WHERE id=1) THEN 'Y' ELSE 'N' END) AS default_place
 				FROM venue_code;";
 
 		if ($query = $this -> db -> query($sql)) {
@@ -70,7 +71,7 @@ class Model_student extends CI_Model {
 	// Model to get available time slot from db
 	public function get_slot_time_with_cap($slot_day, $level, $venue_id) {
 
-		$sql = "SELECT 	c.id, cs.slot_time, cs.slot_day, 
+		$sql = "SELECT 	c.id, cs.slot_time, cs.slot_day,
 				s.occupied, lvl.max_capacity, (lvl.max_capacity - ifnull(s.occupied,0)) AS capacityLeft,
         		CONCAT(TIME_FORMAT(cs.slot_time, '%h:%i%p') ,' (', (lvl.max_capacity - ifnull(s.occupied,0)),')') as slot_time_str
 				FROM course_info c
@@ -93,7 +94,7 @@ class Model_student extends CI_Model {
 	}
 
 	public function get_student_info($std_id) {
-		$sql = "SELECT s.*, c.venue_id, c.level_id, cs.slot_time, cs.slot_day 
+		$sql = "SELECT s.*, c.venue_id, c.level_id, cs.slot_time, cs.slot_day
 				FROM student_info s
 				LEFT JOIN course_info c ON c.id = s.course_id
 				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
@@ -107,18 +108,20 @@ class Model_student extends CI_Model {
 	}
 
 	public function get_student_details($std_id) {
-		$sql = "SELECT s.*, c.*, e.*, cs.*, e.name as staff_name, s.id as student_id FROM student_info s 
+		$sql = "SELECT s.*, c.*, cs.*, e.name as staff_name, s.id as student_id
+                FROM student_info s
 				LEFT JOIN course_info c ON c.id = s.course_id
 				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
 				WHERE s.id=" . $std_id;
 		$query = $this -> db -> query($sql);
+		//print_r($query -> row_array());
 		return $query -> row_array();
 
 	}
 
 	public function get_student_details_course($std_id) {
-		$sql = "SELECT b.*, p.term from student_bill b 	
+		$sql = "SELECT b.*, p.term from student_bill b
 				LEFT JOIN course_package p ON p.package_id = b.package_id 
 				WHERE std_id = " . $std_id . " AND bill_status = 'A' order by bill_id DESC LIMIT 1;";
 
@@ -240,7 +243,7 @@ class Model_student extends CI_Model {
 		if ($data['error'] == false) {
 			$insertValues = array(strtoupper($stdName), $stdID, $stdGender, $stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, 'A', $dob);
 			$sqlStr = "INSERT INTO student_info (std_name, std_identity, std_gender, std_contact, std_email, guardian_name, guardian_gender, guardian_contact, addr_building, addr_street, addr_postkod, addr_city, addr_state, addr_country, course_id, std_status, dob) VALUES";
-			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			if ($this -> db -> query($sqlStr, $insertValues)) {
 				$data['error'] = false;
 				$data['message'] = 'New Student register success!';
@@ -271,6 +274,7 @@ class Model_student extends CI_Model {
 		$lessonVenue = $this -> input -> post('lessonVenue');
 		$lessonDay = $this -> input -> post('lessonDay');
 		$courseID = $this -> input -> post('lessonTime');
+		$dob = $this->input->post('dob');
 
 		// Assume there is no error
 		$data['error'] = false;
@@ -306,8 +310,8 @@ class Model_student extends CI_Model {
 		}
 
 		if ($data['error'] == false) {
-			$insertValues = array($stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, $stdID, $stdName);
-			$sqlStr = "UPDATE student_info SET std_contact=?, std_email=?, guardian_name=?, guardian_gender=?, guardian_contact=?, addr_building=?, addr_street=?, addr_postkod=?, addr_city=?, addr_state=?, addr_country=?, course_id=? ";
+			$insertValues = array($stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, $dob, $stdID, $stdName);
+			$sqlStr = "UPDATE student_info SET std_contact=?, std_email=?, guardian_name=?, guardian_gender=?, guardian_contact=?, addr_building=?, addr_street=?, addr_postkod=?, addr_city=?, addr_state=?, addr_country=?, course_id=?, dob=? ";
 			$sqlStr = $sqlStr . " WHERE id=? AND std_name=?";
 			if ($this -> db -> query($sqlStr, $insertValues)) {
 				$data['error'] = false;

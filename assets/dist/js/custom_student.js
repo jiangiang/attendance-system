@@ -127,6 +127,7 @@ $(document).ready(function () {
             $("#studentID").val(data.id);
             $("#stdName").val(data.std_name);
             $("#stdID").val(data.std_identity);
+            $("#dob").val(data.dob);
             $("#stdContact").val(data.std_contact);
             $('#stdGender').val(data.std_gender).prop("selected", true);
             $("#stdEmail").val(data.std_email);
@@ -172,6 +173,7 @@ $(document).ready(function () {
 
             $('#help-block').remove();
             $('#btnSubmitStdInfo').prop('disabled', true);
+            $('#btnSubmitStdInfo').text('In Progress');
             var formData = $(form).serialize();
 
             $.ajax({
@@ -183,7 +185,7 @@ $(document).ready(function () {
                 })
                 // using the done promise callback
                 .done(function (data) {
-                    $('#btnSubmitStdInfo').prop('disabled', false);
+                    $('#btnSubmitStdInfo').text('DONE');
                     console.log(data);
                     if (data.error) {
                         $('#help-block').remove();
@@ -202,6 +204,7 @@ $(document).ready(function () {
                     }
                 }).fail(function (data) {
                 $('#btnSubmitStdInfo').prop('disabled', false);
+                $('#btnSubmitStdInfo').text('Retry');
                 console.log(data);
             });
             event.preventDefault();

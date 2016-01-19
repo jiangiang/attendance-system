@@ -41,9 +41,9 @@ $(document).ready(function() {
 				$.each(data, function(i, item) {
 					var appendTxt = '';
 					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.std_name + ' (' + item.std_identity + ')</a>';
-					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.std_identity + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.std_name + '"></input>';
+					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '/">';
+					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.std_identity + '"/>';
+					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.std_name + '"/>';
 					appendTxt += '</div>';
 					$('#stdSearchResult').append(appendTxt);
 				});
@@ -123,10 +123,12 @@ $(document).ready(function() {
 	// bill package
 	$('#billPackage').on('change', function() {
 		var UrlGetName = "package_check/" + $('#billPackage').val();
+		$('#btnSubmitTuitionFeeReceivable').prop('disabled', true);
 		$.getJSON(UrlGetName, function(data) {
 			console.log(data);
 		}).done(function(data) {
 			// dfdsf
+			$('#btnSubmitTuitionFeeReceivable').prop('disabled', false);
 			$('.search_result').remove();
 			var allow_custom_date = data.allow_custom_date;
 			var term = data.term;
@@ -144,6 +146,9 @@ $(document).ready(function() {
 				$("#custom_date").css("display", "none");
 				$('.custom_date_div').remove();
 			}
+		}).fail(function(data){
+			$('#btnSubmitTuitionFeeReceivable').prop('disabled', false);
+			alert('Fail to get bill package');
 		});
 	});
 

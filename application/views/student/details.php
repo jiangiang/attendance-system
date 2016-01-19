@@ -21,8 +21,14 @@
 							</thead>
 							<tbody>
 								<tr>
-									<td style="width:20%">Name|Genger</td>
-									<td style="width:30%"><?php echo $student_details['std_name']."|".$std_gender ?></td>
+									<td style="width:20%">Name</td>
+									<td style="width:30%"><?php echo $student_details['std_name'] ?></td>
+									<td style="width:20%">Age</td>
+									<td style="width:30%"><?php echo (date('Y') - date('Y',strtotime($student_details['dob']))) ?></td>
+								</tr>
+								<tr>
+									<td style="width:20%">Gender</td>
+									<td style="width:30%"><?php echo $std_gender ?></td>
 									<td style="width:20%">I/C Number</td>
 									<td style="width:30%"><?php echo $student_details['std_identity'] ?></td>
 								</tr>

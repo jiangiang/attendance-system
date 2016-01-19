@@ -77,7 +77,7 @@
                 </div>
                 <div class="col-lg-12 col-xs-12" style="padding-left: 0px; padding-right: 2px">
 	                <div class="form-group" id="custom_date" style="display:block">
-	                	<label>Custom Date</label>
+	                	<!-- <label>Custom Date</label> -->
 		           </div>
 	           </div>
 	           <div class="form-group" >
