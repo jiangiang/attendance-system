@@ -1,5 +1,5 @@
 /**
- *
+ * Javascript for course venue
  */
 var post_url;
 var activation_url;
