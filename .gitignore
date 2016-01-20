@@ -4,6 +4,8 @@
 */cache/*
 !*/cache/index.html
 !*/cache/.htaccess
+.codelite
+.phpstorm
 
 # =========================
 # Operating System Files
