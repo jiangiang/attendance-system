@@ -109,7 +109,7 @@ class Attendance extends CI_Controller {
 			if (isset($payoutStatus) && $payoutStatus != "") {
 				$data['payoutStatus'] = $payoutStatus;
 			} else {
-				$data['payoutStatus'] = 'N';
+				$data['payoutStatus'] = '';
 			}
 
 			$data['years'] = $this -> model_attendance -> staffAttendance_getYear();

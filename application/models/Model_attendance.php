@@ -332,14 +332,16 @@ class Model_attendance extends CI_Model {
 		if (!isset($year) || $year == "") {
 			$year = date('Y');
 		}
-		if (!isset($payoutStatus) || $payoutStatus == "") {
-			$payoutStatus = 'N';
-		}
+		if (isset($payoutStatus) && $payoutStatus != "") {
+			$payoutStatus = "AND payout_status = '".$payoutStatus."'";
+		}else{
+            $payoutStatus = "";
+        }
 
 		$sql = "SELECT name, identity, a.* 
 				FROM employee_attendance a
 				JOIN employee_info e ON e.id = a.employee_id 
-				WHERE " . $whereClause . " session_date >= '" . $year . "-" . $month . "-01' AND session_date < '" . $year . "-" . $month . "-31' AND payout_status = '" . $payoutStatus . "' and attendance_status='A'";
+				WHERE " . $whereClause . " session_date >= '" . $year . "-" . $month . "-01' AND session_date < '" . $year . "-" . $month . "-31' " . $payoutStatus . " and attendance_status='A'";
 
 		if ($query = $this -> db -> query($sql)) {
 			return $query -> result_array();
