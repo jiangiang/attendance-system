@@ -12,9 +12,27 @@ class Course extends CI_Controller {
 
 	public function course_home() {
 		if ($this -> session -> userdata('logged_in')) {
-            
+
+			$name = $this -> input -> post('searchName');
+			$venue = $this -> input -> post('venue');
+
+			$data['venue'] = "";
+			$data['name'] = "";
+
+			if (isset($venue) && $venue != "") {
+				$data['venue'] = $venue;
+			} else {
+				$data['venue'] = null;
+			}
+			if (isset($name) && $name != "") {
+				$data['name'] = $name;
+			} else {
+				$data['name'] = null;
+			}
+
+
 			$data['title'] = "Course Overview";
-			$data['course_list'] = $this -> model_course -> get_courses();
+			$data['course_list'] = $this -> model_course -> get_courses($data['venue'], $data['name']);
 			$data['course_level_list'] = $this -> model_course -> get_course_level();
 			$data['venue_list'] = $this -> model_course -> get_venue_code();
 			$data['instructor_list'] = $this -> model_course -> get_instructor_list();

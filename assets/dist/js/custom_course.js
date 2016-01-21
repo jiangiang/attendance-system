@@ -23,7 +23,7 @@ $(document).ready(function () {
     });
 
     $('#btncourseNew').on('click', function () {
-        post_url = '../course_create';
+        post_url = 'course_create';
         who_click = 'NewCourse';
         $("#lessonVenue").prop('disabled', false);
         $("#courseLevel").prop('disabled', false);
@@ -36,7 +36,7 @@ $(document).ready(function () {
     });
 
     $('.btnCourseUpdate').on('click', function () {
-        post_url = '../course_update';
+        post_url = 'course_update';
         who_click = 'UpdateCourse';
         $('#courseName').prop("readonly", true);
         $('#courseInfoModalTitle').text(' Update Course Info');
@@ -125,7 +125,7 @@ $(document).ready(function () {
 
                     }
                 }).fail(function (data) {
-                $('#btnSubmitcourseInfo').prop('disabled', false);
+                $('#btnSubmitCourseInfo').prop('disabled', false);
                 $('#btnSubmitCourseInfo').text('Retry');
                 console.log(data);
             });
