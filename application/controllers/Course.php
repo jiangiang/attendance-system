@@ -10,10 +10,10 @@ class Course extends CI_Controller {
 		show_404();
 	}
 
-	public function summary($day = null) {
+	public function course_home($day = null) {
 		if ($this -> session -> userdata('logged_in')) {
 			if (is_null($day)) {
-				$url = "Course/summary/1";
+				$url = "Course/course_home/1";
 				redirect($url, 'refresh');
 			}
 			$data['day_selected'] = $day;

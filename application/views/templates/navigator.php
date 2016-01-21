@@ -31,9 +31,8 @@
 
 					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Courses <span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<li><?php echo anchor('course/summary', 'Courses Home'); ?></li>
-							<li class="divider"></li>
 							<li><?php echo anchor('course/schedule', 'Schedules'); ?></li>
+							<li class="divider"></li>
 							<li><?php echo anchor('course/category', 'Categories'); ?></li>
 							<li><?php echo anchor('course/venue', 'Venues'); ?></li>
 							<li><?php echo anchor('course/package', 'Packages'); ?></li>

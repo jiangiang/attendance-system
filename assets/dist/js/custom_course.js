@@ -30,7 +30,7 @@ $(document).ready(function () {
         $('#courseDay').prop('disabled', false);
         $("#courseTimeHour").prop('disabled', false);
         $("#courseTimeMinute").prop('disabled', false);
-        $('#courseInfoModalTitle').text(' New Course');
+        $('#courseInfoModalTitle').text(' New Schedule');
         $('#courseInfoModal').modal('show');
         $('#btnSubmitCourseInfo').text('Create');
     });
