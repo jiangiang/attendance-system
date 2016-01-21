@@ -10,20 +10,37 @@ class Course extends CI_Controller {
 		show_404();
 	}
 
-	public function course_home($day = null) {
+	public function course_home() {
+		if ($this -> session -> userdata('logged_in')) {
+            
+			$data['title'] = "Course Overview";
+			$data['course_list'] = $this -> model_course -> get_courses();
+			$data['course_level_list'] = $this -> model_course -> get_course_level();
+			$data['venue_list'] = $this -> model_course -> get_venue_code();
+			$data['instructor_list'] = $this -> model_course -> get_instructor_list();
+
+			$data['content'] = "course/course_home";
+			$this -> load -> view('templates/main', $data);
+
+		} else {
+			redirect('login', 'refresh');
+		}
+	}
+    
+    public function schedule($day = null) {
 		if ($this -> session -> userdata('logged_in')) {
 			if (is_null($day)) {
-				$url = "Course/course_home/1";
+				$url = "Course/schedule/1";
 				redirect($url, 'refresh');
 			}
 			$data['day_selected'] = $day;
 			$data['title'] = "Course Info Summary";
-			$data['course_active_rows'] = $this -> model_course -> show_course_active($day);
+			$data['schedule_lists'] = $this -> model_course -> get_schedules($day);
 			$data['get_course_type'] = $this -> model_course -> get_course_level();
 			$data['venue_code_rows'] = $this -> model_course -> get_venue_code();
 			$data['instructor_list'] = $this -> model_course -> get_instructor_list();
 
-			$data['content'] = "course/course_home";
+			$data['content'] = "course/schedule";
 			$this -> load -> view('templates/main', $data);
 
 		} else {
@@ -53,16 +70,16 @@ class Course extends CI_Controller {
 		}
 	}
 
-	public function courseNew() {
+	public function course_create() {
 		// Create New student
 		if ($this -> session -> userdata('logged_in')) {
-			echo $this -> model_course -> course_new();
+			echo $this -> model_course -> course_create();
 		} else {
 			redirect('login', 'refresh');
 		}
 	}
 
-	public function courseUpdate() {
+	public function course_update() {
 		// Update student Info
 		if ($this -> session -> userdata('logged_in')) {
 			echo $this -> model_course -> course_update();

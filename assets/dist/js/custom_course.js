@@ -23,7 +23,7 @@ $(document).ready(function () {
     });
 
     $('#btncourseNew').on('click', function () {
-        post_url = '../courseNew';
+        post_url = '../course_create';
         who_click = 'NewCourse';
         $("#lessonVenue").prop('disabled', false);
         $("#courseLevel").prop('disabled', false);
@@ -36,7 +36,7 @@ $(document).ready(function () {
     });
 
     $('.btnCourseUpdate').on('click', function () {
-        post_url = '../courseUpdate';
+        post_url = '../course_update';
         who_click = 'UpdateCourse';
         $('#courseName').prop("readonly", true);
         $('#courseInfoModalTitle').text(' Update Course Info');
@@ -74,19 +74,10 @@ $(document).ready(function () {
             $("#courseID").val(data.id);
             $("#lessonVenue").val(data.venue_id).prop("selected", true);
             $("#courseLevel").val(data.level_id).prop("selected", true);
-            $("#courseCapacity").val(data.max_capacity).prop("selected", true);
-            $('#courseDay').val(data.slot_day).prop("selected", true);
-
-            $("#course_schedule").find('option').remove();
-            $("#course_schedule").prop('disabled', true);
-            $("#course_schedule").append('<option value="">' + data.slot_time + ' (' + data.duration_minute + ' mins)' + '</option>');
             $("#courseInstructor").val(data.instructor_id).prop("selected", true);
-
+            
             $("#lessonVenue").prop('disabled', true);
             $("#courseLevel").prop('disabled', true);
-            $('#courseDay').prop('disabled', true);
-            $("#courseTimeHour").prop('disabled', true);
-            $("#courseTimeMinute").prop('disabled', true);
 
         }).fail(function (data) {
             //alert("fail");

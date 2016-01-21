@@ -4,13 +4,33 @@ class Model_course extends CI_Model {
 		$this -> load -> database();
 	}
 
-	public function show_course_active($day) {
+	public function get_courses() {
+		$sql = "SELECT 
+					c.*, v.venue_name, l.*, e.name as instuctor_name 
+				FROM course_info c
+				LEFT JOIN course_level l ON l.level_id = c.level_id
+				LEFT JOIN employee_info e ON e.id =  c.instructor_id
+				LEFT JOIN venue_code v ON v.venue_id = c.venue_id
+				WHERE c.course_status = 'A' 
+				ORDER BY l.level_name;";
+		if ($query = $this -> db -> query($sql)) {
+
+			// print_r($query->result_array());
+			return $query -> result_array();
+		} else {
+			$error = $this -> db -> error();
+			echo "error <br>";
+			// echo $error;
+		}
+	}
+    
+    public function get_schedules($day) {
 		$sql = "SELECT 
 					c.*, s.*, v.venue_name, l.*, e.name as instuctor_name 
 				FROM course_info c
 				LEFT JOIN course_level l ON l.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id =  c.instructor_id
-				LEFT JOIN course_schedule s ON s.schedule_id = c.schedule_id
+                
 				LEFT JOIN venue_code v ON v.venue_id = c.venue_id
 				WHERE c.course_status = 'A' AND s.slot_day = " . $day . "
 				ORDER BY s.slot_day, s.slot_time, l.level_name;";
@@ -148,8 +168,7 @@ class Model_course extends CI_Model {
 	}
 
 	public function get_course_info($course_id) {
-		$sql = "SELECT c.*, s.*, l.*, v.venue_id FROM course_info c
-				LEFT JOIN course_schedule s ON c.schedule_id = s.schedule_id
+		$sql = "SELECT c.*, l.*, v.venue_id FROM course_info c
 				LEFT JOIN course_level l ON c.level_id = l.level_id 
 				LEFT JOIN venue_code v ON c.venue_id = v.venue_id  
 				WHERE c.id=?";
@@ -162,54 +181,27 @@ class Model_course extends CI_Model {
 		}
 	}
 
-	public function course_new() {
+	public function course_create() {
 		$lessonVenue = $this -> input -> post('lessonVenue');
 		$courseLevel = $this -> input -> post('courseLevel');
-		// $courseCapacity = $this -> input -> post('courseCapacity');
-		$courseDay = $this -> input -> post('courseDay');
-		$schedule_id = $this -> input -> post('course_schedule');
 		$courseInstructor = $this -> input -> post('courseInstructor');
-
-		// Null has been set as Precomp/ Comp's day
-		if ($courseDay == 'NULL')
-			$courseDay = null;
 
 		// Assume there is no error
 		$data['error'] = false;
 
 		// validation check if user use some unexpected method to submit without fulfil these field.
-		if (!isset($lessonVenue) || !isset($courseLevel) ||  !isset($courseDay) || !isset($schedule_id)) {
+		if (!isset($lessonVenue) || !isset($courseLevel)) {
 			$data['error'] = true;
 			$data['message'] = "Please check your fill again.";
 			return json_encode($data);
 		}
-
-		if(!isset($courseInstructor)){
-			$courseInstructor = "";
-		}
-		// =============================================================
-		// verify the instructor has been arranged for particular slot
-		// =============================================================
-		$sql = "SELECT *
-					FROM course_info c
-					LEFT JOIN employee_info e ON e.id = c.instructor_id
-					WHERE e.id=? AND c.schedule_id =? AND c.venue_id =? AND c.course_status='A'";
-		$whereClause = array($courseInstructor, $schedule_id, $lessonVenue);
-
-		if ($query = $this -> db -> query($sql, $whereClause)) {
-			if ($query -> num_rows() > 0) {
-				$data['message'] = "Same instructor has been assigned to this session.";
-				$data['error'] = true;
-				return json_encode($data);
-			}
-		}
-
-		$this -> db -> trans_begin();
+        
+        $this -> db -> trans_begin();
 
 		if ($data['error'] == false) {
-			$insertValues = array($schedule_id, $lessonVenue, $courseInstructor, $courseLevel, time());
-			$sql = "INSERT INTO course_info (schedule_id, venue_id, instructor_id, level_id, timestamp) VALUES (?,?,?,?,?)";
-			$this -> db -> query($sql, $insertValues);
+			$values = array($lessonVenue, $courseInstructor, $courseLevel, time());
+			$sql = "INSERT INTO course_info (venue_id, instructor_id, level_id, timestamp) VALUES (?,?,?,?)";
+			$this -> db -> query($sql, $values);
 
 			$this -> db -> trans_commit();
 			if ($this -> db -> trans_status() === TRUE) {
@@ -274,7 +266,62 @@ class Model_course extends CI_Model {
 		}
 		return json_encode($message);
 	}
+    
+    // -----------------------------------------
+    // Schedule Related 
+    // -----------------------------------------
+    public function schedule_create() {
+		$lessonVenue = $this -> input -> post('lessonVenue');
+		$courseLevel = $this -> input -> post('courseLevel');
+		$courseInstructor = $this -> input -> post('courseInstructor');
 
+		// Assume there is no error
+		$data['error'] = false;
+
+		// validation check if user use some unexpected method to submit without fulfil these field.
+		if (!isset($lessonVenue) || !isset($courseLevel)) {
+			$data['error'] = true;
+			$data['message'] = "Please check your fill again.";
+			return json_encode($data);
+		}
+        
+		// =============================================================
+		// verify the instructor has been arranged for particular slot
+		// =============================================================
+		$sql = "SELECT *
+					FROM course_info c
+					LEFT JOIN employee_info e ON e.id = c.instructor_id
+					WHERE e.id=? AND c.schedule_id =? AND c.venue_id =? AND c.course_status='A'";
+		$whereClause = array($courseInstructor, $schedule_id, $lessonVenue);
+
+		if ($query = $this -> db -> query($sql, $whereClause)) {
+			if ($query -> num_rows() > 0) {
+				$data['message'] = "Same instructor has been assigned to this session.";
+				$data['error'] = true;
+				return json_encode($data);
+			}
+		}
+
+		$this -> db -> trans_begin();
+
+		if ($data['error'] == false) {
+			$insertValues = array($schedule_id, $lessonVenue, $courseInstructor, $courseLevel, time());
+			$sql = "INSERT INTO course_info (schedule_id, venue_id, instructor_id, level_id, timestamp) VALUES (?,?,?,?,?)";
+			$this -> db -> query($sql, $insertValues);
+
+			$this -> db -> trans_commit();
+			if ($this -> db -> trans_status() === TRUE) {
+				$data['message'] = 'Course Created!';
+				$data['error'] = false;
+			} else {
+				$data['error'] = true;
+				$data['message'] = 'Something wrong!';
+			}
+		}
+		return json_encode($data);
+		// End of New student registar
+	}
+    
 	// ------------------------------------------
 	// Below is course category related function
 	// ------------------------------------------
