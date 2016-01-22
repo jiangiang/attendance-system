@@ -44,16 +44,21 @@ class Course extends CI_Controller {
 			redirect('login', 'refresh');
 		}
 	}
-    
+
+
+	/*
+	 * schedule Matter
+	 * */
+
     public function schedule($day = null) {
 		if ($this -> session -> userdata('logged_in')) {
 
 			if (is_null($day)) {
-				$url = "Course/course_schedule/1";
+				$url = "Course/schedule/1";
 				redirect($url, 'refresh');
 			}
 
-			$venue = $this -> input -> post('venue');
+			$venue = $this -> input -> post('search_venue');
 
 			$data['venue'] = "";
 
@@ -65,7 +70,7 @@ class Course extends CI_Controller {
 
 			$data['day_selected'] = $day;
 			$data['title'] = "Schedule Summary";
-			$data['list_schedule'] = $this -> model_course -> get_schedules($day, $data['venue']);
+			$data['list_schedule'] = $this -> model_course -> list_schedules($day, $data['venue']);
 			$data['list_venue'] = $this -> model_course -> get_venue_code();
 			$data['list_course'] = $this -> model_course -> get_course_list();
 			$data['list_instructor'] = $this -> model_course -> get_instructor_list();
@@ -78,6 +83,16 @@ class Course extends CI_Controller {
 		}
 	}
 
+	public function ajax_get_course($instructor_id, $venue_id) {
+		if ($this -> session -> userdata('logged_in')) {
+			echo $this -> model_course -> ajax_get_course($instructor_id, $venue_id);
+		}
+	}
+
+
+	/*
+	 * Category matter
+	 */
 	public function category() {
 		if ($this -> session -> userdata('logged_in')) {
 
@@ -95,6 +110,15 @@ class Course extends CI_Controller {
 	public function getCourseInfo($course_id) {
 		if ($this -> session -> userdata('logged_in')) {
 			echo $this -> model_course -> get_course_info($course_id);
+		} else {
+			redirect('login', 'refresh');
+		}
+	}
+
+	public function schedule_create() {
+		// Create New Schedule
+		if ($this -> session -> userdata('logged_in')) {
+			echo $this -> model_course -> schedule_create();
 		} else {
 			redirect('login', 'refresh');
 		}
@@ -168,11 +192,7 @@ class Course extends CI_Controller {
 		}
 	}
 
-	public function get_schedule($slot_day) {
-		if ($this -> session -> userdata('logged_in')) {
-			echo $this -> model_course -> get_schedule($slot_day);
-		}
-	}
+
 
 	// Venue Matters
 	public function venue() {

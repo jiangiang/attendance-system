@@ -20,8 +20,8 @@ class Model_student extends CI_Model {
 		}
 		$sql = "select s.*, cs.*, c.id as course_id, slot_time, slot_day
 				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id 
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+				LEFT JOIN course_schedule cs ON cs.course_id = s.course_id
+				LEFT JOIN course_info c ON c.id = s.course_id
 				WHERE " . $whereClause . "s.std_status='A' LIMIT 100";
 		if ($query = $this -> db -> query($sql)) {
 

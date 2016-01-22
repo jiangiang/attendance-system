@@ -6,6 +6,10 @@ class Model_course extends CI_Model
         $this->load->database();
     }
 
+    /*
+     * Course related function
+     *
+     */
     public function get_courses($venue_id, $instructor_name) {
         /*
         $sql = "SELECT
@@ -50,31 +54,7 @@ class Model_course extends CI_Model
 
     }
 
-    public function get_schedules($day, $venue_id) {
-        if(!isset($venue_id) || $venue_id == ""){
-            $venue = "";
-        }else{
-            $venue = " AND venue_id = ".$venue_id;
-        }
-        $sql = "SELECT
-					c.*, s.*, v.venue_name, l.*, e.name as instuctor_name
-				FROM course_schedule s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_level l ON l.level_id = c.level_id
-				LEFT JOIN employee_info e ON e.id =  c.instructor_id
-				LEFT JOIN venue_code v ON v.venue_id = c.venue_id
-				WHERE c.course_status = 'A' AND s.slot_day = " . $day .  $venue ."
-				ORDER BY s.slot_day, s.slot_time, l.level_name";
 
-        if ($query = $this->db->query($sql)) {
-
-            // print_r($query->result_array());
-            return $query->result_array();
-        } else {
-            // $error = $this->db->error();
-            // echo $error;
-        }
-    }
 
     public function show_category() {
         $sql = "SELECT * FROM course_level";
@@ -322,16 +302,47 @@ class Model_course extends CI_Model
     // -----------------------------------------
     // Schedule Related 
     // -----------------------------------------
+
+    public function list_schedules($day, $venue_id) {
+        if(!isset($venue_id) || $venue_id == ""){
+            $venue = "";
+        }else{
+            $venue = " AND venue_id = ".$venue_id;
+        }
+        $sql = "SELECT
+					c.*, s.*, v.venue_name, l.*, e.name as instuctor_name
+				FROM course_schedule s
+				LEFT JOIN course_info c ON c.id = s.course_id
+				LEFT JOIN course_level l ON l.level_id = c.level_id
+				LEFT JOIN employee_info e ON e.id =  c.instructor_id
+				LEFT JOIN venue_code v ON v.venue_id = c.venue_id
+				WHERE c.course_status = 'A' AND s.slot_day = " . $day .  $venue ."
+				ORDER BY s.slot_day, s.slot_time, l.level_name";
+        if ($query = $this->db->query($sql)) {
+            // print_r($query->result_array());
+            return $query->result_array();
+        } else {
+            // $error = $this->db->error();
+            // echo $error;
+        }
+    }
+
     public function schedule_create() {
-        $lessonVenue = $this->input->post('lessonVenue');
-        $courseLevel = $this->input->post('courseLevel');
-        $courseInstructor = $this->input->post('courseInstructor');
+
+        $venue_id = $this->input->post('venue_id');
+        $schedule_day = $this->input->post('schedule_day');
+        $schedule_hour = $this->input->post('schedule_hour');
+        $schedule_minute = $this->input->post('schedule_minute');
+        $course_id = $this->input->post('course_id');
+        $instructor_id = $this->input->post('instructor_id');
+
+        $schedule_time = $schedule_hour .":".$schedule_minute .":00";
 
         // Assume there is no error
         $data['error'] = false;
 
         // validation check if user use some unexpected method to submit without fulfil these field.
-        if (!isset($lessonVenue) || !isset($courseLevel)) {
+        if (!isset($course_id) || !isset($venue_id) || !isset($schedule_day)|| !isset($schedule_hour)|| !isset($schedule_minute)|| !isset($instructor_id)) {
             $data['error'] = true;
             $data['message'] = "Please check your fill again.";
             return json_encode($data);
@@ -340,11 +351,18 @@ class Model_course extends CI_Model
         // =============================================================
         // verify the instructor has been arranged for particular slot
         // =============================================================
-        $sql = "SELECT *
-					FROM course_info c
-					LEFT JOIN employee_info e ON e.id = c.instructor_id
-					WHERE e.id=? AND c.schedule_id =? AND c.venue_id =? AND c.course_status='A'";
-        $whereClause = array($courseInstructor, $schedule_id, $lessonVenue);
+        $sql = "SELECT c.id
+					FROM course_schedule cs
+					LEFT JOIN course_info c ON cs.course_id = c.id
+					LEFT JOIN course_level cl ON cl.level_id = c.level_id
+					WHERE
+					  c.instructor_id=? AND
+					  (cs.slot_time>=? AND cs.slot_time<=TIME( DATE_ADD( concat( '2000-01-01 ', ? ) , INTERVAL cl.duration_minute MINUTE ) )) AND
+					  cs.slot_day = ? AND
+					  c.venue_id =? AND
+					  c.id =? AND
+					  c.course_status='A'";
+        $whereClause = array($instructor_id, $schedule_time, $schedule_time, $schedule_day, $venue_id, $course_id);
 
         if ($query = $this->db->query($sql, $whereClause)) {
             if ($query->num_rows() > 0) {
@@ -357,13 +375,13 @@ class Model_course extends CI_Model
         $this->db->trans_begin();
 
         if ($data['error'] == false) {
-            $insertValues = array($schedule_id, $lessonVenue, $courseInstructor, $courseLevel, time());
-            $sql = "INSERT INTO course_info (schedule_id, venue_id, instructor_id, level_id, timestamp) VALUES (?,?,?,?,?)";
+            $insertValues = array( $schedule_day, $schedule_time, $course_id, time());
+            $sql = "INSERT INTO course_schedule (slot_day, slot_time, course_id, timestamp) VALUES (?,?,?,?)";
             $this->db->query($sql, $insertValues);
 
             $this->db->trans_commit();
             if ($this->db->trans_status() === TRUE) {
-                $data['message'] = 'Course Created!';
+                $data['message'] = 'Schedule Created!';
                 $data['error'] = false;
             } else {
                 $data['error'] = true;
@@ -372,6 +390,27 @@ class Model_course extends CI_Model
         }
         return json_encode($data);
         // End of New student registar
+    }
+
+    public function ajax_get_course($instructor_id, $venue_id) {
+        if(!isset($venue_id) || $venue_id == ""){
+            $venue = "";
+        }else{
+            $venue = " AND venue_id = ".$venue_id;
+        }
+        $sql = "SELECT *
+				FROM course_info c
+				LEFT JOIN course_level cl ON cl.level_id = c.level_id
+				WHERE c.course_status = 'A' AND c.instructor_id = " . $instructor_id.  $venue ;
+
+        if ($query = $this->db->query($sql)) {
+
+            // print_r($query->result_array());
+            return json_encode($query->result_array());
+        } else {
+            // $error = $this->db->error();
+            // echo $error;
+        }
     }
 
     // ------------------------------------------

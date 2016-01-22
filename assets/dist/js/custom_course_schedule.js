@@ -7,8 +7,6 @@ var who_click;
 // Modal for new student registration
 $(document).ready(function () {
 
-    get_course_schedule();
-
     $('#modal_schedule').on('shown.bs.modal', function () {
         if (who_click == 'NewCourse')
             $('#lessonVenue').focus();
@@ -19,10 +17,10 @@ $(document).ready(function () {
     // To make sure it is clean for the next show
     $('#modal_schedule').on('hidden.bs.modal', function () {
         $('#help-block').remove();
-        document.getElementById("courseInfoFrm").reset();
+        document.getElementById("form_schedule").reset();
     });
 
-    $('#btncourseNew').on('click', function () {
+    $('#btn_schedule_new').on('click', function () {
         post_url = 'course_create';
         who_click = 'NewCourse';
         $('#modalTitle').text(' New Schedule');
@@ -31,24 +29,26 @@ $(document).ready(function () {
         $('#courseDay').prop('disabled', false);
         $("#courseTimeHour").prop('disabled', false);
         $("#courseTimeMinute").prop('disabled', false);
-        $('#courseInfoModal').modal('show');
+
+        $('#modal_schedule').modal('show');
         $('#btnSubmitCourseInfo').text('Create');
     });
 
-    // Course De-Activate
-    $('#tblActiveCourse').on('click', '.courseDeactivate', function () {
+    // De-Activate
+    $('#tbl_content_main').on('click', '.deactivate_schedule', function () {
 
-        activation_url = '../courseDeactivate';
-        var course_id = $(this).closest('tr').children('td#course_id').text();
+        activation_url = '../schedule_deactivate';
+        var activation_id = $(this).closest('tr').children('td#current_schedule_id').text();
 
-        $('#activationID').val(course_id);
+        $('#activation_id').val(activation_id);
 
-        var r = confirm("Deactivate this course ?");
+        var r = confirm("Deactivate this ID ?");
         if (r == true) {
             $('#form_activation').submit();
         }
     });
 
+/*
     // Course Update - retrieve lastest info from db
     $('#tblActiveCourse').on('click', '.btnCourseUpdate', function () {
 
@@ -74,7 +74,7 @@ $(document).ready(function () {
             console.log(data);
         });
     });
-
+*/
     // Submission
     $("#form_schedule").validate({
         rules: {
@@ -85,13 +85,13 @@ $(document).ready(function () {
         submitHandler: function (form, event) {
 
             $('#help-block').remove();
-            $('#btnSubmitCourseInfo').prop('disabled', true);
-            $('#btnSubmitCourseInfo').text('In Progress');
+            $('#btn_submit_modal').prop('disabled', true);
+            $('#btn_submit_modal').text('In Progress');
             var formData = $(form).serialize();
 
             $.ajax({
                     type: 'POST',
-                    url: post_url,
+                    url: '../schedule_create',
                     data: formData,
                     dataType: 'json',
                     encode: true
@@ -100,14 +100,17 @@ $(document).ready(function () {
                 .done(function (data) {
                     console.log(data);
                     if (data.error) {
+                        $('#btn_submit_modal').text('Retry');
+                        $('#btn_submit_modal').prop('disabled', false);
                         $('#help-block').remove();
                         $('#statusMsg').append('<div class="alert alert-danger" id="help-block">' + data.message + '</div>');
                     } else {// Success !
-                        document.getElementById("courseInfoFrm").reset();
+                        $('#btn_submit_modal').text('Done!');
+                        document.getElementById("form_schedule").reset();
                         $('#help-block').remove();
                         $('#statusMsg').append('<div class="alert alert-success" id="help-block">' + data.message + '</div>');
                         setTimeout(function () {
-                            $('#courseInfoModal').modal('hide');
+                            $('#modal_schedule').modal('hide');
                         }, 100);
                         setTimeout(function () {
                             location.reload();
@@ -115,8 +118,8 @@ $(document).ready(function () {
 
                     }
                 }).fail(function (data) {
-                $('#btnSubmitCourseInfo').prop('disabled', false);
-                $('#btnSubmitCourseInfo').text('Retry');
+                $('#btn_submit_modal').prop('disabled', false);
+                $('#btn_submit_modal').text('Retry');
                 console.log(data);
             });
             event.preventDefault();
@@ -125,8 +128,8 @@ $(document).ready(function () {
     });
 
     // detect input change, get the name from DB
-    $("#courseDay").on("change", function () {
-        get_course_schedule();
+    $("#instructor_id").on("change", function () {
+        get_course();
 
     });
 
@@ -160,19 +163,21 @@ $(document).ready(function () {
 
 });
 
-function get_course_schedule() {
-    var UrlGetName = "../get_schedule/" + $("#courseDay").val();
+function get_course() {
+    var UrlGetName = "../ajax_get_course/" + $("#instructor_id").val() + "/" + $("#venue_id").val();
+
+    $("#course_id").prop('disabled', true);
+
     $.getJSON(UrlGetName, function (data) {
         console.log(data);
     }).done(function (data) {
-        $("#course_schedule").find('option').remove();
-        $("#course_schedule").append('<option value="" disabled selected></option>');
+        $("#course_id").find('option').remove();
+        $("#course_id").append('<option value="" disabled="disabled" selected="selected"></option>');
         $.each(data, function (index, item) {
-            $("#course_schedule").append('<option value="' + item.schedule_id + '">' + item.slot_time + '</option>');
+            $("#course_id").append('<option value="' + item.id + '">' + item.level_name + '</option>');
         });
-
+        $("#course_id").prop('disabled', false);
     }).fail(function (data) {
-
-        console.log(data);
+        $("#course_id").prop('disabled', false);
     });
 }

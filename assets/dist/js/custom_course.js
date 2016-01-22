@@ -7,8 +7,6 @@ var who_click;
 // Modal for new student registration
 $(document).ready(function () {
 
-    get_course_schedule();
-
     $('#courseInfoModal').on('shown.bs.modal', function () {
         if (who_click == 'NewCourse')
             $('#lessonVenue').focus();
@@ -170,19 +168,4 @@ $(document).ready(function () {
 
 });
 
-function get_course_schedule() {
-    var UrlGetName = "../get_schedule/" + $("#courseDay").val();
-    $.getJSON(UrlGetName, function (data) {
-        console.log(data);
-    }).done(function (data) {
-        $("#course_schedule").find('option').remove();
-        $("#course_schedule").append('<option value="" disabled selected></option>');
-        $.each(data, function (index, item) {
-            $("#course_schedule").append('<option value="' + item.schedule_id + '">' + item.slot_time + '</option>');
-        });
 
-    }).fail(function (data) {
-
-        console.log(data);
-    });
-}
