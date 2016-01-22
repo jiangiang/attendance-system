@@ -5,21 +5,21 @@
 <script src="<?php echo base_url();?>assets/plugins/input-mask/inputmask.extensions.js" type="text/javascript"></script>
 
 <!-- Custom Page JScript -->
-<script src="<?php echo base_url();?>assets/dist/js/custom_course.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>assets/dist/js/custom_course_schedule.js" type="text/javascript"></script>
 
 <!-- course activate/deactivation -->
-<form id="courseActivationFrm" name="courseActivationFrm">
+<form id="form_activation" name="form_activation">
 	<input type="hidden" id="activationID" name="activationID">
 </form>
 
-<form id="courseInfoFrm" name="courseInfoFrm" autocomplete="off">
-	<input type="hidden" id="courseID" name="courseID" value="" />
-	<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="courseInfoModal">
+<form id="form_schedule" name="form_schedule" autocomplete="off">
+	<input type="hidden" id="schedule_id" name="schedule_id" value="" />
+	<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="modal_schedule">
 		<div class="modal-dialog" style="margin-top: 2%;">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title">
-						<span id="courseInfoModalTitle">If you see me smth is wrong yo</span>
+						<span id="modalTitle">If you see me smth is wrong yo</span>
 					</h4>
 				</div>
 				<div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
@@ -29,7 +29,7 @@
 						<div class="form-group">
 							<label for="venue">Venue</label>
 							<select class="form-control" id="lessonVenue" name="lessonVenue">
-								<?php foreach ($venue_code_rows as $row){ ?>
+								<?php foreach ($list_venue as $row){ ?>
 								<option value="<?php echo $row['venue_id'];?>" <?php if($row['default_place']=='Y'){ ?> selected="selected"<?php } ?>>
 									<?php echo $row['venue_name'];?>
 								</option>
@@ -40,7 +40,7 @@
 							<label>Insturctor</label>
 							<select class="form-control" id="courseInstructor" name="courseInstructor">
 								<option value="" selected disabled>Please select an option...</option>
-								<?php foreach($instructor_list as $row){ ?>
+								<?php foreach($list_instructor as $row){ ?>
 								<option value="<?php echo $row['id'];?>"><?php echo $row['name']?></option>
 								<?php } ?>
 							</select>
@@ -98,23 +98,38 @@
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="box">
 			        <div class="box-body" style="text-align: center">
-				 		<div class="btn-group">
-							<a href="1"><button type="button" class="btn btn-<?php if($day_selected==1){echo "success";}else{echo "default";}?>">Monday</button></a>
-							<a href="2"><button type="button" class="btn btn-<?php if($day_selected==2){echo "success";}else{echo "default";}?>">Tuesday</button></a>
-							<a href="3"><button type="button" class="btn btn-<?php if($day_selected==3){echo "success";}else{echo "default";}?>">Wednesday</button></a>
-							<a href="4"><button type="button" class="btn btn-<?php if($day_selected==4){echo "success";}else{echo "default";}?>">Thursday</button></a>
-							<a href="5"><button type="button" class="btn btn-<?php if($day_selected==5){echo "success";}else{echo "default";}?>">Friday</button></a>
-							<a href="6"><button type="button" class="btn btn-<?php if($day_selected==6){echo "success";}else{echo "default";}?>">Saturday</button></a>
-							<a href="7"><button type="button" class="btn btn-<?php if($day_selected==7){echo "success";}else{echo "default";}?>">Sunday</button></a>
-							<a>
-								<button type="button" class="btn btn-danger btncourseNew" id="btncourseNew">Add New Course</button>
-							</a>
-	                    </div>
+
+						<div class="form-group">
+							<div class="col-md-2 col-sm-2 col-xs-2$">
+								<div class="form-group">
+									<label for="venue" class="sr-only">Venue</label>
+									<select class="form-control" id="lessonVenue" name="lessonVenue">
+										<?php foreach ($list_venue as $row){ ?>
+											<option value="<?php echo $row['venue_id'];?>" <?php if($row['default_place']=='Y'){ ?> selected="selected"<?php } ?>>
+												<?php echo $row['venue_name'];?>
+											</option>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="btn-group">
+								<a href="1"><button type="button" class="btn btn-<?php if($day_selected==1){echo "success";}else{echo "default";}?>">Monday</button></a>
+								<a href="2"><button type="button" class="btn btn-<?php if($day_selected==2){echo "success";}else{echo "default";}?>">Tuesday</button></a>
+								<a href="3"><button type="button" class="btn btn-<?php if($day_selected==3){echo "success";}else{echo "default";}?>">Wednesday</button></a>
+								<a href="4"><button type="button" class="btn btn-<?php if($day_selected==4){echo "success";}else{echo "default";}?>">Thursday</button></a>
+								<a href="5"><button type="button" class="btn btn-<?php if($day_selected==5){echo "success";}else{echo "default";}?>">Friday</button></a>
+								<a href="6"><button type="button" class="btn btn-<?php if($day_selected==6){echo "success";}else{echo "default";}?>">Saturday</button></a>
+								<a href="7"><button type="button" class="btn btn-<?php if($day_selected==7){echo "success";}else{echo "default";}?>">Sunday</button></a>
+								<a>
+									<button type="button" class="btn btn-danger btncourseNew" id="btncourseNew">Add New Course</button>
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="row">
 			<div class="col-lg-12 col-sm-12 col-xs-12">
 				<div class="box box-success">
@@ -138,7 +153,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach ($course_active_rows as $row){?>
+								<?php foreach ($list_schedule as $row){?>
 								<?php
 									$temp_slot_day = $row ['slot_day'];
 									if (is_null ( $temp_slot_day ))

@@ -47,18 +47,30 @@ class Course extends CI_Controller {
     
     public function schedule($day = null) {
 		if ($this -> session -> userdata('logged_in')) {
+
 			if (is_null($day)) {
-				$url = "Course/schedule/1";
+				$url = "Course/course_schedule/1";
 				redirect($url, 'refresh');
 			}
-			$data['day_selected'] = $day;
-			$data['title'] = "Course Info Summary";
-			$data['schedule_lists'] = $this -> model_course -> get_schedules($day);
-			$data['get_course_type'] = $this -> model_course -> get_course_level();
-			$data['venue_code_rows'] = $this -> model_course -> get_venue_code();
-			$data['instructor_list'] = $this -> model_course -> get_instructor_list();
 
-			$data['content'] = "course/schedule";
+			$venue = $this -> input -> post('venue');
+
+			$data['venue'] = "";
+
+			if (isset($venue) && $venue != "") {
+				$data['venue'] = $venue;
+			} else {
+				$data['venue'] = null;
+			}
+
+			$data['day_selected'] = $day;
+			$data['title'] = "Schedule Summary";
+			$data['list_schedule'] = $this -> model_course -> get_schedules($day, $data['venue']);
+			$data['list_venue'] = $this -> model_course -> get_venue_code();
+			$data['list_course'] = $this -> model_course -> get_course_list();
+			$data['list_instructor'] = $this -> model_course -> get_instructor_list();
+
+			$data['content'] = "course/course_schedule";
 			$this -> load -> view('templates/main', $data);
 
 		} else {

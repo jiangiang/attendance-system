@@ -50,23 +50,28 @@ class Model_course extends CI_Model
 
     }
 
-    public function get_schedules($day) {
+    public function get_schedules($day, $venue_id) {
+        if(!isset($venue_id) || $venue_id == ""){
+            $venue = "";
+        }else{
+            $venue = " AND venue_id = ".$venue_id;
+        }
         $sql = "SELECT
-					c.*, s.*, v.venue_name, l.*, e.name as instuctor_name 
-				FROM course_info c
+					c.*, s.*, v.venue_name, l.*, e.name as instuctor_name
+				FROM course_schedule s
+				LEFT JOIN course_info c ON c.id = s.course_id
 				LEFT JOIN course_level l ON l.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id =  c.instructor_id
-                
 				LEFT JOIN venue_code v ON v.venue_id = c.venue_id
-				WHERE c.course_status = 'A' AND s.slot_day = " . $day . "
-				ORDER BY s.slot_day, s.slot_time, l.level_name;";
+				WHERE c.course_status = 'A' AND s.slot_day = " . $day .  $venue ."
+				ORDER BY s.slot_day, s.slot_time, l.level_name";
+
         if ($query = $this->db->query($sql)) {
 
             // print_r($query->result_array());
             return $query->result_array();
         } else {
-            $error = $this->db->error();
-            echo "error <br>";
+            // $error = $this->db->error();
             // echo $error;
         }
     }
@@ -94,6 +99,16 @@ class Model_course extends CI_Model
             $error = $this->db->error();
             echo "error <br>";
             // echo $error;
+        }
+    }
+
+    public function get_course_list() {
+        $sql = "SELECT * FROM course_info WHERE course_status = 'A'";
+        if ($query = $this->db->query($sql)) {
+            return $query->result_array();
+        } else {
+            $error = $this->db->error();
+            echo "error <br>";
         }
     }
 
