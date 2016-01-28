@@ -35,7 +35,7 @@
 									<td><?php echo $row['slot_day']?></td>
 									<td><?php echo date('h:i A', strtotime($row['slot_time'])) ?></td>
 									<td><?php echo $row['level_name']?></td>
-									<td><?php echo $row['overdue']?></td>
+									<td><?php echo $row['overdue_count']?></td>
 									
 								</tr>
 								<?php } ?>

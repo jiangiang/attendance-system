@@ -14,95 +14,45 @@ class Model_attendance extends CI_Model {
 		// 2nd Union - list all student at that particular time
 		// 4th Union - list with replacement
 
-		$sql = "SELECT * FROM (
-				SELECT 
-					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time, a.replacement,
-					l.level_name, e.name as instructor, b.bill_id,  max(b.issue_date), b.expiry_date, b.receipt_no,
-					aaa.last_attend_date, 
-				    p.term,
-				    aa.lesson_left,
-				    a.attendance_status,
-				    log.*,
-				    CONCAT('att_', a.id) as attendance_id
+		$sql = "SELECT
+					s.id as student_id, s.std_name, lesson_left, lesson_overdue, slot_day, slot_time,
+					l.log, e.short_name as instructor_name, cl.level_name, issue_date,
+					a.attendance_status, a.replacement, a.id as attendance_id
 				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
-				LEFT JOIN course_level l on l.level_id = c.level_id
+				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN (SELECT std_id, max(issue_date) issue_date FROM student_bill
+							GROUP BY std_id ORDER BY issue_date DESC ) b ON b.std_id = s.id
+				LEFT JOIN course_info c ON c.id = cs.course_id
+				LEFT JOIN course_level cl ON cl.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN student_bill b ON b.std_id = s.id
-				LEFT JOIN course_package p ON p.package_id = b.package_id
-				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.replacement='N'
-				LEFT JOIN (SELECT student_id, count(id) as lesson_left FROM student_attendance WHERE attendance_status = 'N' AND void ='N' GROUP BY student_id) aa ON aa.student_id = s.id
-				LEFT JOIN (SELECT student_id, attend_date as last_attend_date FROM student_attendance WHERE attendance_status = 'Y' GROUP BY student_id LIMIT 1 ORDER BY attend_date DESC) aaa ON aaa.student_id = s.id	
-				LEFT JOIN (SELECT * FROM student_log WHERE void='N' GROUP BY student_id ORDER BY timestamp DESC LIMIT 1) log ON log.student_id = s.id 
-				WHERE attend_date= '" . $slot_date . "' AND attend_time = '" . $slot_time . "' AND s.std_status='A' AND b.bill_status = 'A' 
-				GROUP BY s.id
+				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.attend_date = '".$slot_date."'
+				LEFT JOIN student_log l ON l.student_id = s.id
+				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_left FROM student_attendance
+							WHERE attendance_status='N' AND void='N' GROUP BY student_id ) al ON al.student_id = s.id
+				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_overdue FROM student_attendance
+							WHERE bill_id IS NULL AND void='N' GROUP BY student_id ) av ON av.student_id = s.id
+				WHERE cs.slot_day = '".$slot_day."' AND cs.slot_time = '".$slot_time."' AND s.std_status = 'A'
 				UNION
-				SELECT 
-					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time, a.replacement,
-					l.level_name, e.name as instructor, b.bill_id,  max(b.issue_date), b.expiry_date, b.receipt_no,
-					aaa.last_attend_date, 
-				    p.term,
-				    ifnull(aa.lesson_left,0) * -1 as lesson_left ,
-				    a.attendance_status,
-				    log.*,
-				    '' as attendance_id
-				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
-				LEFT JOIN course_level l on l.level_id = c.level_id
+				SELECT
+						s.id as student_id, s.std_name, lesson_left, lesson_overdue, slot_day, slot_time,
+						l.log, e.short_name as instructor_name, cl.level_name, issue_date,
+						a.attendance_status, a.replacement, a.id as attendance_id
+				FROM student_attendance a
+				LEFT JOIN  student_info s ON s.id = a.student_id
+				LEFT JOIN (SELECT std_id, max(issue_date) issue_date FROM student_bill
+							GROUP BY std_id ORDER BY issue_date DESC ) b ON b.std_id = s.id
+				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN course_info c ON c.id = cs.course_id
+				LEFT JOIN course_level cl ON cl.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN student_bill b ON b.std_id = s.id
-				LEFT JOIN course_package p ON p.package_id = b.package_id
-				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.replacement='N'
-				LEFT JOIN (SELECT student_id, count(id) as lesson_left FROM student_attendance WHERE bill_id IS NULL AND void ='N' GROUP BY student_id) aa ON aa.student_id = s.id
-				LEFT JOIN (SELECT student_id, attend_date as last_attend_date FROM student_attendance WHERE attendance_status = 'Y' GROUP BY student_id LIMIT 1 ORDER BY attend_date DESC) aaa ON aaa.student_id = s.id	
-				LEFT JOIN (SELECT * FROM student_log WHERE void='N' GROUP BY student_id ORDER BY timestamp DESC LIMIT 1) log ON log.student_id = s.id 
-				WHERE attend_date= '" . $slot_date . "' AND attend_time = '" . $slot_time . "' AND s.std_status='A' AND b.bill_status is NULL
-				GROUP BY s.id
-				UNION
-				SELECT 
-					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time, a.replacement,
-					l.level_name, e.name as instructor, b.bill_id,  max(b.issue_date), b.expiry_date, b.receipt_no,
-					aaa.last_attend_date, 
-				    p.term,
-				    ifnull(aa.lesson_left,1) * -1 as lesson_left ,
-				    a.attendance_status,
-				    log.*,
-				    CONCAT('ovr_', s.id, '_" . $slot_time . "', '_" . $slot_date . "') as attendance_id
-				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
-				LEFT JOIN course_level l on l.level_id = c.level_id
-				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN student_bill b ON b.std_id = s.id
-				LEFT JOIN course_package p ON p.package_id = b.package_id
-				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.replacement='N' AND attend_date= '" . $slot_date . "' AND attend_time = '" . $slot_time . "'
-				LEFT JOIN (SELECT student_id, count(id) as lesson_left FROM student_attendance WHERE bill_id IS NULL AND void ='N' GROUP BY student_id) aa ON aa.student_id = s.id
-				LEFT JOIN (SELECT student_id, attend_date as last_attend_date FROM student_attendance WHERE attendance_status = 'Y' GROUP BY student_id LIMIT 1 ORDER BY attend_date DESC) aaa ON aaa.student_id = s.id	
-				LEFT JOIN (SELECT * FROM student_log WHERE void='N' GROUP BY student_id ORDER BY timestamp DESC LIMIT 1) log ON log.student_id = s.id 
-				WHERE  s.std_status='A' AND cs.slot_time ='" . $slot_time . "' AND cs.slot_day = '" . date('N', strtotime($slot_date)) . "' AND a.attendance_status IS NULL 
-				GROUP BY s.id 
-				UNION
-				SELECT 
-					ss.id, ss.std_name, ss.std_identity, " . $slot_day . ", attend_time, aa.replacement,
-					ll.level_name,'','','', CASE WHEN aa.bill_id IS NULL THEN 'No Payment Received' ELSE b.expiry_date END,'','','',
-					CASE WHEN aa.bill_id IS NOT NULL THEN 'Replacement' END, '',
-					 log.*,
-					 '' as attendance_id
-				FROM student_attendance aa
-				LEFT JOIN student_bill b ON b.std_id = aa.student_id AND b.bill_id = aa.bill_id
-				LEFT JOIN student_info ss ON ss.id = aa.student_id
-				LEFT JOIN course_info cc ON cc.id = ss.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = cc.schedule_id
-				LEFT JOIN course_level ll ON ll.level_id = cc.level_id 
-				LEFT JOIN (SELECT * FROM student_log WHERE void='N' GROUP BY student_id ORDER BY timestamp DESC LIMIT 1) log ON log.student_id = aa.student_id 
-				WHERE attend_date = ? AND attend_time = ? AND aa.replacement ='Y') as a
-				ORDER BY instructor	
-				;";
-		$whereClause = array($slot_date, $slot_time);
+				LEFT JOIN student_log l ON l.student_id = s.id
+				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_left FROM student_attendance
+							WHERE attendance_status='N' AND void='N' GROUP BY student_id ) al ON al.student_id = s.id
+				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_overdue FROM student_attendance
+							WHERE bill_id IS NULL AND void='N' GROUP BY student_id ) av ON av.student_id = s.id
+				WHERE attendance_status='Y' AND cs.slot_time = '".$slot_time."' AND a.attend_date = '".$slot_date."'AND replacement = 'Y'";
 
-		if ($query = $this -> db -> query($sql, $whereClause)) {
+		if ($query = $this -> db -> query($sql)) {
 			// echo $this->db->last_query();
 			return $query -> result_array();
 		} else {
@@ -248,9 +198,9 @@ class Model_attendance extends CI_Model {
 
 	public function get_slot_time($slot_day) {
 		$sql = "SELECT 
-					cs.schedule_id, cs.slot_time, date_format(cs.slot_time, '%r') as slot_time_12  
+					schedule_id, slot_time, date_format(slot_time, '%r') as slot_time_12
 				from course_info c 
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+				LEFT JOIN course_schedule cs ON cs.course_id = c.id
 				WHERE slot_day = ? AND c.course_status='A' 
 				GROUP BY slot_time ORDER BY slot_time ; ";
 		$whereClause = array($slot_day);
@@ -266,11 +216,11 @@ class Model_attendance extends CI_Model {
 	public function get_next_slot_time($slot_day, $curr_time, $schedule_id) {
 		if (is_null($slot_day)) {
 			$sql = "SELECT 
-					c.schedule_id, slot_time 
+					schedule_id, slot_time
 				FROM 
 					course_info c
 				LEFT JOIN 
-					course_schedule cs ON cs.schedule_id = c.schedule_id
+					course_schedule cs ON cs.course_id = c.id
 				WHERE 
 					slot_day = ?  AND course_status='A' 
 				GROUP BY slot_time 
@@ -278,13 +228,13 @@ class Model_attendance extends CI_Model {
 			$whereClause = array($slot_day);
 		} else {
 			$sql = "SELECT 
-					c.schedule_id, slot_time 
+					schedule_id, slot_time
 				FROM 
 					course_info c
 				LEFT JOIN 
-					course_schedule cs ON cs.schedule_id = c.schedule_id
+					course_schedule cs ON cs.course_id = c.id
 				WHERE 
-					c.schedule_id = ?   AND course_status='A' 
+					schedule_id = ?   AND course_status='A'
 				GROUP BY slot_time 
 				ORDER BY slot_time LIMIT 1";
 			$whereClause = array($schedule_id);

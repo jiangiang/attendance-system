@@ -6,21 +6,16 @@ class Model_dashboard extends CI_Model {
 
 	public function student_overdue() {
 		$sql = "SELECT 
-					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time, 
+					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time,
 					l.level_name, 
-				    attend_times as overdue
+				    count(bill_id) as overdue_count
 				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+				LEFT JOIN course_schedule cs ON cs.course_id = s.schedule_id
+				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN course_level l on l.level_id = c.level_id
-				LEFT JOIN (
-					SELECT student_id, bill_id, count(id)  AS attend_times 
-				    FROM student_attendance
-				    WHERE bill_id is null
-				    GROUP BY bill_id, student_id
-				    ) a ON a.student_id = s.id
+				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.bill_id IS NULL
 				WHERE s.std_status='A'
-				HAVING overdue is not null;
+				GROUP BY student_id
 					
 				;";
 

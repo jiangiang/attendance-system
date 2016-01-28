@@ -16,7 +16,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">
-                        <i class="fa fa-exchange fa-lg"></i> <span id="modal_title">Smth is wrong if you see me</span>
+                        <i class="fa fa-exchange fa-lg"></i> <span id="modal_title">Something is wrong if you see me</span>
                     </h4>
                 </div>
                 <div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
@@ -175,8 +175,8 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Slot</th>
-                                    <th>Lesson Left</th>
-                                    <th>Expired Date</th>
+                                    <th>Lesson Remain/ Overdue</th>
+                                    <th>Last Payment</th>
                                     <th>Level</th>
                                     <th>Instructor</th>
                                     <th>Last Log</th>
@@ -186,31 +186,41 @@
                                 <tbody>
                                 <?php foreach ($students_attendance as $row) { ?>
                                     <tr>
-                                        <td id="student_id"><?php echo $row['id'] ?></td>
+                                        <td id="student_id"><?php echo $row['student_id'] ?></td>
                                         <td id="student_name"><?php echo $row['std_name'] ?></td>
                                         <td><?php echo date('l', strtotime("Sunday +" . $row['slot_day'] . " Days")) . " " . date('G:i A', strtotime($row['slot_time'])); ?></td>
                                         <td>
-                                            <span <?php if ($row['lesson_left'] <= 0) { ?> style="color: red" <?php } ?> ><?php echo $row['lesson_left'] ?></span>
+                                            <?php
+                                                $lesson_left = 0;
+                                                if(!is_null(['lesson_overdue'])){
+                                                    $lesson_left = $lesson_left + ($row['lesson_overdue'] * -1);
+                                                }
+                                                if(!is_null(['lesson_left'])){
+                                                    $lesson_left = $lesson_left + $row['lesson_left'];
+                                                }
+                                            ?>
+                                            <span <?php if ($lesson_left <= 0) { ?> style="color: red" <?php } ?> ><?php echo $lesson_left ?></span>
                                         </td>
-                                        <td><?php echo $row['expiry_date'] ?></td>
+                                        <td><?php echo $row['issue_date'] ?></td>
                                         <td><?php echo $row['level_name'] ?></td>
-                                        <td><?php echo $row['instructor'] ?></td>
+                                        <td><?php echo $row['instructor_name'] ?></td>
                                         <td><?php echo $row['log'] ?></td>
                                         <td>
-                                            <?php $tmpStr = explode('_', $row['attendance_id']); ?>
-                                            <?php $attendance_type = $tmpStr[0]; ?>
-                                            <?php if ($row['attendance_status'] == 'N' && $attendance_type == 'att') { ?>
+
+                                            <?php if (is_null($row['attendance_status'])) { ?>
                                                 <input type="checkbox" name="std_attend[]"
-                                                       value="<?php echo $row['attendance_id'] ?>">
-                                            <?php } else if ($row['attendance_status'] == 'Y') { ?>
-                                                Taken
-                                            <?php } else if ($row['replacement'] == 'Y') { ?>
-                                                <span style="color: blue">Replacement</span>
-                                            <?php } else if ($attendance_type == 'ovr') { ?>
+                                                       value="<?php echo 'ovr_'.$row['student_id'].'_'.$next_slot_time.'_'.$currDate ?>">
+                                            <?php }else if ($row['attendance_status'] == 'N') { ?>
                                                 <input type="checkbox" name="std_attend[]"
-                                                       value="<?php echo $row['attendance_id'] ?>">
-                                                <?php
-                                            } else { ?>
+                                                       value="<?php echo 'att_'.$row['attendance_id'] ?>">
+                                            <?php }else if ($row['attendance_status'] == 'Y') { ?>
+                                                <?php if($row['replacement'] == 'N'){ ?>
+                                                    Taken
+                                                <?php }else if($row['replacement'] == 'Y'){ ?>
+                                                    <span style="color: blue">Replacement</span>
+                                                <?php } ?>
+                                            <?php } else { ?>
+                                                <?php echo $row['attendance_status'] ?>
                                                 Something Is Wrong.
                                             <?php } ?>
                                         </td>
