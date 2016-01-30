@@ -1,10 +1,10 @@
-<?php
+	<?php
 class Model_student extends CI_Model {
 	public function __construct() {
 		$this -> load -> database();
 	}
 
-	public function show_student_active() {
+	public function list_student() {
 		$time = $this -> input -> post('searchTime');
 		$day = $this -> input -> post('searchDay');
 		$name = $this -> input -> post('searchName');
@@ -16,13 +16,13 @@ class Model_student extends CI_Model {
 			$whereClause = $whereClause . "slot_day= " . $day . " AND ";
 		}
 		if (isset($name) && $name != "") {
-			$whereClause = $whereClause . "s.std_name like '%" . strtoupper($name) . "%' AND ";
+			$whereClause = $whereClause . "s.student_name like '%" . strtoupper($name) . "%' AND ";
 		}
 		$sql = "select s.*, cs.*, c.id as course_id, slot_time, slot_day
 				FROM student_info s
-				LEFT JOIN course_schedule cs ON cs.course_id = s.course_id
-				LEFT JOIN course_info c ON c.id = s.course_id
-				WHERE " . $whereClause . "s.std_status='A' LIMIT 100";
+				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN course_info c ON c.id = cs.course_id
+				WHERE " . $whereClause . "s.student_status='A' ORDER BY sid DESC LIMIT 80";
 		if ($query = $this -> db -> query($sql)) {
 
 			// print_r($query->result_array());
@@ -35,7 +35,7 @@ class Model_student extends CI_Model {
 	}
 
 	public function show_student_inactive() {
-		$sql = "select * from student_info WHERE std_status='I'";
+		$sql = "select * from student_info WHERE student_status='I'";
 		if ($query = $this -> db -> query($sql)) {
 			return $query -> result_array();
 		} else {
@@ -69,20 +69,24 @@ class Model_student extends CI_Model {
 	}
 
 	// Model to get available time slot from db
-	public function get_slot_time_with_cap($slot_day, $level, $venue_id) {
+	public function ajax_slot_capacity($slot_day, $level, $venue_id) {
 
-		$sql = "SELECT 	c.id, cs.slot_time, cs.slot_day,
-				s.occupied, lvl.max_capacity, (lvl.max_capacity - ifnull(s.occupied,0)) AS capacityLeft,
-        		CONCAT(TIME_FORMAT(cs.slot_time, '%h:%i%p') ,' (', (lvl.max_capacity - ifnull(s.occupied,0)),')') as slot_time_str
-				FROM course_info c
-				LEFT JOIN course_level lvl ON lvl.level_id = c.level_id
+		$sql = "SELECT
+					cs.schedule_id, cs.slot_time, cs.slot_day,
+					s.occupied_count, cl.max_capacity,
+					(cl.max_capacity - ifnull(s.occupied_count,0)) AS capacityLeft,
+					CONCAT(TIME_FORMAT(cs.slot_time, '%h:%i%p') ,' (', (cl.max_capacity - ifnull(s.occupied_count,0)),')') as slot_time_str
+				FROM course_schedule cs
+				LEFT JOIN course_info c ON c.id = cs.course_id
+				LEFT JOIN course_level cl ON cl.level_id= c.level_id
 				LEFT JOIN (
-					SELECT count(id) as occupied, course_id 
-					FROM student_info 
-					WHERE std_status='A' GROUP BY course_id) s ON s.course_id = c.id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
-				WHERE c.level_id = ? AND cs.slot_day = ? AND c.course_status='A' AND c.venue_id = ? AND ((lvl.max_capacity - ifnull(s.occupied,0))>0 OR lvl.private_state='Y');
-				";
+					SELECT count(sid) as occupied_count, schedule_id
+					FROM student_info
+					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = cs.schedule_id
+				WHERE slot_day=".$slot_day." AND cl.level_id = ".$level." AND c.venue_id = ".$venue_id."
+					";
+
+
 		$whereClause = array($level, $slot_day, $venue_id);
 		if ($query = $this -> db -> query($sql, $whereClause)) {
 			// echo $this->db->last_query();
@@ -93,12 +97,12 @@ class Model_student extends CI_Model {
 		}
 	}
 
-	public function get_student_info($std_id) {
+	public function ajax_student_details($std_id) {
 		$sql = "SELECT s.*, c.venue_id, c.level_id, cs.slot_time, cs.slot_day
 				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
-				WHERE s.id=?";
+				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN course_info c ON c.id = cs.course_id
+				WHERE s.sid=?";
 		if ($query = $this -> db -> query($sql, array($std_id))) {
 			return json_encode($query -> row_array());
 		} else {
@@ -108,12 +112,12 @@ class Model_student extends CI_Model {
 	}
 
 	public function get_student_details($std_id) {
-		$sql = "SELECT s.*, c.*, cs.*, e.name as staff_name, s.id as student_id
+		$sql = "SELECT s.*, c.*, cs.*, e.name as staff_name
                 FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+                LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				WHERE s.id=" . $std_id;
+				WHERE s.sid=" . $std_id;
 		$query = $this -> db -> query($sql);
 		//print_r($query -> row_array());
 		return $query -> row_array();
@@ -182,46 +186,71 @@ class Model_student extends CI_Model {
 
 	}
 
-	public function student_new() {
-		$stdName = $this -> input -> post('stdName');
-		$stdID = $this -> input -> post('stdID');
-		$stdGender = $this -> input -> post('stdGender');
-		$stdContact = $this -> input -> post('stdContact');
-		$stdEmail = $this -> input -> post('stdEmail');
-		$stdGuardian = $this -> input -> post('stdGuardian');
-		$stdGuardianGender = $this -> input -> post('stdGuardianGender');
-		$stdGuardianContact = $this -> input -> post('stdGuardianContact');
-		$addr_building = $this -> input -> post('stdAddr1');
-		$addr_street = $this -> input -> post('stdAddr2');
-		$addr_postkod = $this -> input -> post('Postcode');
-		$addr_city = $this -> input -> post('City');
-		$addr_state = $this -> input -> post('State');
-		$addr_country = $this -> input -> post('Country');
-		$lessonType = $this -> input -> post('lessonType');
-		$lessonVenue = $this -> input -> post('lessonVenue');
-		$lessonDay = $this -> input -> post('lessonDay');
-		$courseID = $this -> input -> post('lessonTime');
-		$dob = $this->input->post('dob');
+	private function check_field($field){
+		if(!isset($field)){
+			return false;
+		}
+		if($field == ""){
+			return false;
+		}
+		return true;
+	}
 
-		// Assume there is no error
+	public function student_new() {
+
+		$student_name = $this -> input -> post('student_name');
+		$student_id = $this -> input -> post('student_id');
+		$student_dob = $this->input->post('student_dob');
+		$student_gender = $this -> input -> post('student_gender');
+		$student_contact = $this -> input -> post('student_contact');
+		$student_email = $this -> input -> post('student_email');
+
+		$guardian_name = $this -> input -> post('guardian_name');
+		$guardian_gender = $this -> input -> post('guardian_contact');
+		$guardian_contact = $this -> input -> post('guardian_gender');
+
+		$address_line1 = $this -> input -> post('address_1');
+		$address_line2 = $this -> input -> post('address_2');
+		$postcode = $this -> input -> post('postcode');
+		$city = $this -> input -> post('city');
+		$state = $this -> input -> post('state');
+		$country = $this -> input -> post('country');
+
+		$lesson_type = $this -> input -> post('lesson_type');
+		$lesson_venue = $this -> input -> post('lesson_venue');
+		$lesson_day = $this -> input -> post('lesson_day');
+		$schedule_id = $this -> input -> post('schedule_id');
+
 		$data['error'] = false;
 
-		// validation check if user use some unexpected method to submit without fulfil these field.
-		if (empty($stdName) || empty($stdGender) || empty($stdContact) || empty($courseID) || !isset($dob)) {
+		// pass the field to function check_field for checking
+		$check_field = true;
+		$check_field = $check_field && $this->check_field($student_name);
+		$check_field = $check_field && $this->check_field($student_id);
+		$check_field = $check_field && $this->check_field($student_dob);
+		$check_field = $check_field && $this->check_field($student_gender);
+		$check_field = $check_field && $this->check_field($student_contact);
+		$check_field = $check_field && $this->check_field($student_email);
+		$check_field = $check_field && $this->check_field($schedule_id);
+
+
+		if (!$check_field) {
 			$data['error'] = true;
 			$data['message'] = "Please check your fill again.";
 			return json_encode($data);
 		}
 
-		// Security check if there is any collision while submitting
-		$sql = "SELECT (cl.max_capacity - ifnull(s.occupied,0)) AS capacityLeft
-				FROM course_info c
+		// =============================
+		// mid-air collision check
+		// =============================
+		$sql = "SELECT (cl.max_capacity - ifnull(s.occupied_count,0)) AS capacityLeft
+				FROM course_schedule cs
+				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN course_level cl ON cl.level_id= c.level_id
 				LEFT JOIN (
-					SELECT count(id) as occupied, course_id
+					SELECT count(sid) as occupied_count, schedule_id
 					FROM student_info
-					WHERE std_status='A' GROUP BY course_id) s ON s.course_id = c.id
-				WHERE c.id = " . $courseID;
+					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = ".$schedule_id;
 
 		if ($query = $this -> db -> query($sql)) {
 			$cap_left = $query -> row_array();
@@ -233,69 +262,86 @@ class Model_student extends CI_Model {
 				$data['message'] = "Lesson Has been taken, please try again.";
 			}
 		} else {
-			$error = $this -> db -> error();
-			echo "error <br>";
+			//$error = $this -> db -> error();
+			// echo "error <br>";
 		}
 
-		// Reserve for private student
-		//
-		//
 		if ($data['error'] == false) {
-			$insertValues = array(strtoupper($stdName), $stdID, $stdGender, $stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, 'A', $dob);
-			$sqlStr = "INSERT INTO student_info (std_name, std_identity, std_gender, std_contact, std_email, guardian_name, guardian_gender, guardian_contact, addr_building, addr_street, addr_postkod, addr_city, addr_state, addr_country, course_id, std_status, dob) VALUES";
-			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			if ($this -> db -> query($sqlStr, $insertValues)) {
+			$values = array(strtoupper($student_name), strtoupper($student_id), $student_dob, $student_gender, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, $address_line1, $address_line2, $postcode, $city, $state, $country, $schedule_id);
+			$sqlStr = "INSERT INTO student_info (student_name, student_identity, student_dob, student_gender, student_contact, student_email, guardian_name, guardian_gender, guardian_contact, address_line1, address_line2, postcode, city, state, country, schedule_id) VALUES";
+			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			if ($this -> db -> query($sqlStr, $values)) {
 				$data['error'] = false;
-				$data['message'] = 'New Student register success!';
+				$data['message'] = 'Student Registration Success!';
 			} else {
 				$data['error'] = true;
 				$data['message'] = 'Something wrong!';
 			}
 		}
 		return json_encode($data);
-		// End of New student registar
+
 	}
 
 	public function student_update() {
-		$stdID = $this -> input -> post('studentID');
-		$stdName = $this -> input -> post('stdName');
-		$stdContact = $this -> input -> post('stdContact');
-		$stdEmail = $this -> input -> post('stdEmail');
-		$stdGuardian = $this -> input -> post('stdGuardian');
-		$stdGuardianGender = $this -> input -> post('stdGuardianGender');
-		$stdGuardianContact = $this -> input -> post('stdGuardianContact');
-		$addr_building = $this -> input -> post('stdAddr1');
-		$addr_street = $this -> input -> post('stdAddr2');
-		$addr_postkod = $this -> input -> post('Postcode');
-		$addr_city = $this -> input -> post('City');
-		$addr_state = $this -> input -> post('State');
-		$addr_country = $this -> input -> post('Country');
-		$lessonType = $this -> input -> post('lessonType');
-		$lessonVenue = $this -> input -> post('lessonVenue');
-		$lessonDay = $this -> input -> post('lessonDay');
-		$courseID = $this -> input -> post('lessonTime');
-		$dob = $this->input->post('dob');
+
+		$student_sid = $this -> input -> post('student_sid');
+
+		$student_name = $this -> input -> post('student_name');
+		$student_id = $this -> input -> post('student_id');
+		$student_dob = $this->input->post('student_dob');
+		$student_gender = $this -> input -> post('student_gender');
+		$student_contact = $this -> input -> post('student_contact');
+		$student_email = $this -> input -> post('student_email');
+
+		$guardian_name = $this -> input -> post('guardian_name');
+		$guardian_gender = $this -> input -> post('guardian_contact');
+		$guardian_contact = $this -> input -> post('guardian_gender');
+
+		$address_line1 = $this -> input -> post('address_1');
+		$address_line2 = $this -> input -> post('address_2');
+		$postcode = $this -> input -> post('postcode');
+		$city = $this -> input -> post('city');
+		$state = $this -> input -> post('state');
+		$country = $this -> input -> post('country');
+
+		$lesson_type = $this -> input -> post('lesson_type');
+		$lesson_venue = $this -> input -> post('lesson_venue');
+		$lesson_day = $this -> input -> post('lesson_day');
+		$schedule_id = $this -> input -> post('schedule_id');
+
+		$check_field = true;
+		$check_field = $check_field && $this->check_field($student_sid);
+		//$check_field = $check_field && $this->check_field($student_name);
+		$check_field = $check_field && $this->check_field($student_id);
+		$check_field = $check_field && $this->check_field($student_dob);
+		//$check_field = $check_field && $this->check_field($student_gender);
+		$check_field = $check_field && $this->check_field($student_contact);
+		//$check_field = $check_field && $this->check_field($student_email);
+		$check_field = $check_field && $this->check_field($schedule_id);
 
 		// Assume there is no error
 		$data['error'] = false;
 
 		// validation check if user use some unexpected method to submit without fulfil these field.
-		if (empty($stdID) || empty($stdName) || empty($stdContact) || empty($courseID)) {
+		if (!$check_field) {
 			$data['error'] = true;
 			$data['message'] = "Please check your fill again.";
-
 			return json_encode($data);
 		}
 
-		// Security check if there is any collision while submitting
-		$sql = "SELECT
-					(cl.max_capacity - count(std.course_id)) AS capacityLeft
-				FROM student_info std
-				LEFT JOIN course_info cor ON cor.id = std.course_id
-				LEFT JOIN course_level cl ON cl.level_id = cor.level_id
-				WHERE std.course_id = ? ";
+		// =============================
+		// mid-air collision check
+		// =============================
+		$sql = "SELECT (cl.max_capacity - ifnull(s.occupied_count,0)) AS capacityLeft
+				FROM course_schedule cs
+				LEFT JOIN course_info c ON c.id = cs.course_id
+				LEFT JOIN course_level cl ON cl.level_id= c.level_id
+				LEFT JOIN (
+					SELECT count(sid) as occupied_count, schedule_id
+					FROM student_info
+					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = ".$schedule_id;
 
-		if ($query = $this -> db -> query($sql, $courseID)) {
+		if ($query = $this -> db -> query($sql)) {
 			$cap_left = $query -> row_array();
 			if (is_null($cap_left['capacityLeft'])) {
 				$data['error'] = true;
@@ -305,15 +351,16 @@ class Model_student extends CI_Model {
 				$data['message'] = "Lesson Has been taken, please try again.";
 			}
 		} else {
-			$error = $this -> db -> error();
-			echo "error <br>";
+			//$error = $this -> db -> error();
+			//echo "error <br>";
 		}
 
 		if ($data['error'] == false) {
-			$insertValues = array($stdContact, $stdEmail, $stdGuardian, $stdGuardianGender, $stdGuardianContact, $addr_building, $addr_street, $addr_postkod, $addr_city, $addr_state, $addr_country, $courseID, $dob, $stdID, $stdName);
-			$sqlStr = "UPDATE student_info SET std_contact=?, std_email=?, guardian_name=?, guardian_gender=?, guardian_contact=?, addr_building=?, addr_street=?, addr_postkod=?, addr_city=?, addr_state=?, addr_country=?, course_id=?, dob=? ";
-			$sqlStr = $sqlStr . " WHERE id=? AND std_name=?";
-			if ($this -> db -> query($sqlStr, $insertValues)) {
+			$values = array($student_dob, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, $address_line1, $address_line2, $postcode, $city, $state, $country, $schedule_id, $student_sid);
+			$values = array($student_dob, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, $address_line1, $address_line2, $postcode, $city, $state, $country, $schedule_id, $student_sid);
+			$sqlStr = "UPDATE student_info SET student_dob=?, student_contact=?, student_email=?, guardian_name=?, guardian_gender=?, guardian_contact=?, address_line1=?, address_line2=?, postcode=?, city=?, state=?, country=?, schedule_id=? ";
+			$sqlStr = $sqlStr . " WHERE sid=?";
+			if ($this -> db -> query($sqlStr, $values)) {
 				$data['error'] = false;
 				$data['message'] = 'Update info success!';
 			} else {
@@ -322,7 +369,6 @@ class Model_student extends CI_Model {
 			}
 		}
 		return json_encode($data);
-		// End of New student registar
 	}
 
 	public function student_deactivate() {
@@ -330,7 +376,7 @@ class Model_student extends CI_Model {
 		$id = $this -> input -> post('activationID');
 		$name = $this -> input -> post('activationName');
 		$data = array($id, $name);
-		$sql = "UPDATE student_info SET std_status='I' WHERE id=? AND std_name=?";
+		$sql = "UPDATE student_info SET student_status='I' WHERE sid=? AND student_name=?";
 
 		if ($this -> db -> query($sql, $data)) {
 			$message['error'] = false;
@@ -362,7 +408,7 @@ class Model_student extends CI_Model {
 	}
 
 	public function checkID($ID) {
-		$sql = "SELECT std_identity FROM student_info WHERE std_identity=?";
+		$sql = "SELECT student_identity FROM student_info WHERE student_identity=?";
 		if ($query = $this -> db -> query($sql, array($ID))) {
 			if ($query -> num_rows() > 0) {
 				$message['message'] = "Someone is using the same IC too...";

@@ -32,7 +32,7 @@ class Student extends CI_Controller {
 			}
 
 			$data['title'] = "Student Summary";
-			$data['std_active_rows'] = $this -> model_student -> show_student_active();
+			$data['std_active_rows'] = $this -> model_student -> list_student();
 			$data['std_inactive_rows'] = $this -> model_student -> show_student_inactive();
 			$data['course_level_rows'] = $this -> model_student -> get_course_level();
 			$data['venue_code_rows'] = $this -> model_student -> get_venue_code();
@@ -87,17 +87,17 @@ class Student extends CI_Controller {
 		}
 	}
 
-	public function getSlotTimeWithCap($slot_day, $level, $venue_id) {
+	public function ajax_slot_capacity($slot_day, $level, $venue_id) {
 		if ($this -> session -> userdata('logged_in')) {
-			echo $this -> model_student -> get_slot_time_with_cap($slot_day, $level, $venue_id);
+			echo $this -> model_student -> ajax_slot_capacity($slot_day, $level, $venue_id);
 		} else {
 			redirect('login', 'refresh');
 		}
 	}
 
-	public function getStudentInfo($std_id) {
+	public function ajax_student_details($std_id) {
 		if ($this -> session -> userdata('logged_in')) {
-			echo $this -> model_student -> get_student_info($std_id);
+			echo $this -> model_student -> ajax_student_details($std_id);
 		} else {
 			redirect('login', 'refresh');
 		}

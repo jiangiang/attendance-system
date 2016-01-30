@@ -14,6 +14,7 @@
 
 <form id="form_schedule" name="form_schedule" autocomplete="off">
     <input type="hidden" id="schedule_id" name="schedule_id" value=""/>
+    <input type="hidden" id="class_duration" name="class_duration" value=""/>
     <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="modal_schedule">
         <div class="modal-dialog" style="margin-top: 2%;">
             <div class="modal-content">
@@ -86,10 +87,10 @@
                                      style="padding-left: 0px; padding-right: 0px">
                                     <select class="form-control" id="schedule_minute" name="schedule_minute"
                                             required="required">
-                                        <option value="" disabled="disabled" selected="selected">MINUTE</option>
+                                        <option value="" disabled="disabled">MINUTE</option>
                                         <option value="0">0</option>
                                         <option value="15">15</option>
-                                        <option value="30">30</option>
+                                        <option value="30" selected="selected">30</option>
                                         <option value="45">45</option>
                                     </select>
                                 </div>
@@ -217,7 +218,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Slot Day</th>
-                                <th>Slot Time</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
                                 <th>Level</th>
                                 <th>Instructor</th>
                                 <th>Duration</th>
@@ -239,6 +241,7 @@
                                     <td id="current_schedule_id"><?php echo $row['id']; ?></td>
                                     <td><?php echo $dayStr; ?></td>
                                     <td><?php echo date('h:i A', strtotime($row['slot_time'])); ?></td>
+                                    <td><?php echo date('h:i A', strtotime($row['slot_time_end'])); ?></td>
                                     <td><?php echo $row['level_name']; ?></td>
                                     <td><?php echo $row['instuctor_name']; ?></td>
                                     <td><?php echo $row['duration_minute'] . " mins"; ?></td>

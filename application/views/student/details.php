@@ -5,8 +5,8 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 	<section class="content">
-		<?php if($student_details['std_gender'] == 'm'){$std_gender = "Male";}else{$std_gender = "Female";}?>
-		<?php if($student_details['guardian_gender'] == 'm'){$guardian_gender = "Male";}else if($student_details['guardian_gender'] == 'f'){$guardian_gender = "Female";}else{$guardian_gender="";}?>
+		<?php if($student_details['student_gender'] == 'M'){$std_gender = "Male";}else{$std_gender = "Female";}?>
+		<?php if($student_details['guardian_gender'] == 'M'){$guardian_gender = "Male";}else if($student_details['guardian_gender'] == 'F'){$guardian_gender = "Female";}else{$guardian_gender="";}?>
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="box box-success">
@@ -22,33 +22,33 @@
 							<tbody>
 								<tr>
 									<td style="width:20%">Name</td>
-									<td style="width:30%"><?php echo $student_details['std_name'] ?></td>
+									<td style="width:30%"><?php echo $student_details['student_name'] ?></td>
 									<td style="width:20%">Age</td>
-									<td style="width:30%"><?php echo (date('Y') - date('Y',strtotime($student_details['dob']))) ?></td>
+									<td style="width:30%"><?php echo (date('Y') - date('Y',strtotime($student_details['student_dob']))) ?></td>
 								</tr>
 								<tr>
 									<td style="width:20%">Gender</td>
 									<td style="width:30%"><?php echo $std_gender ?></td>
 									<td style="width:20%">I/C Number</td>
-									<td style="width:30%"><?php echo $student_details['std_identity'] ?></td>
+									<td style="width:30%"><?php echo $student_details['student_identity'] ?></td>
 								</tr>
 								<tr>
 									<td>Address</td>
-									<td><?php echo $student_details['addr_building'].", ".$student_details['addr_street'] ?></td>
+									<td><?php echo $student_details['address_line1'].", ".$student_details['address_line2'] ?></td>
 									<td>Contact Number</td>
-									<td><?php echo $student_details['std_contact'] ?></td>
+									<td><?php echo $student_details['student_contact'] ?></td>
 								</tr>
 								<tr>
 									<td></td>
-									<td><?php echo $student_details['addr_postkod'].", ".$student_details['addr_city'] ?></td>
+									<td><?php echo $student_details['postcode'].", ".$student_details['city'] ?></td>
 									<td>Email</td>
-									<td><?php echo $student_details['std_email'] ?></td>
+									<td><?php echo $student_details['student_email'] ?></td>
 								</tr>
 								<tr>
 									<td></td>
-									<td><?php echo $student_details['addr_state'].", ".$student_details['addr_country'] ?></td>
+									<td><?php echo $student_details['state'].", ".$student_details['country'] ?></td>
 									<td>Student Status</td>
-									<td><?php echo $student_details['std_status'] ?></td>
+									<td><?php echo $student_details['student_status'] ?></td>
 								</tr>					
 							<tbody>
 							<thead>
@@ -73,11 +73,11 @@
 									<td>Course Left</td>
 									<td><?php echo $student_details_payment['att_count'] ?></td>
 									<td>Transaction History</td>
-									<td><?php echo anchor('student/payment_history/'.$student_details['student_id'], 'Payment History');?></td>
+									<td><?php echo anchor('student/payment_history/'.$student_details['sid'], 'Payment History');?></td>
 								</tr>
 								<tr>
 									<td>Attendance History</td>
-									<td><?php echo anchor('student/attendance_history/'.$student_details['student_id'], 'Attendance History');?></td>
+									<td><?php echo anchor('student/attendance_history/'.$student_details['sid'], 'Attendance History');?></td>
 									<td></td>
 									<td></td>
 								</tr>

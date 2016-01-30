@@ -34,14 +34,14 @@
 </form>
 
 <form id="studentInfoFrm" name="studentInfoFrm" autocomplete="off">
-    <input type="hidden" id="studentID" name="studentID" value=""/>
-    <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="stdInfoModal">
+    <input type="hidden" id="student_sid" name="student_sid" value=""/>
+    <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="modal_main">
         <div class="modal-dialog modal-lg" style="margin-top: 2%;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">
                         <i class="fa fa-user-plus"></i><span
-                            id="stdInfoModalTitle">If you see me smth is wrong yo</span>
+                            id="modal_title_text">If you see me something is wrong yo</span>
                     </h4>
                 </div>
                 <div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
@@ -50,62 +50,62 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Name</label>
-                            <input class="form-control" placeholder="Student Full Name" id="stdName" name="stdName"
+                            <input class="form-control" placeholder="Student Full Name" id="student_name" name="student_name"
                                    required="required">
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
                             <div class="form-group">
                                 <label>IC/ Passport</label>
-                                <input class="form-control" placeholder="IC/ Passport Number" id="stdID" name="stdID"
+                                <input class="form-control" placeholder="IC/ Passport Number" id="student_id" name="student_id"
                                        required="required">
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
                             <div class="form-group">
                                 <label>DOB</label>
-                                <input type="text" id="dob" name="dob" class="form-control" value="" required
+                                <input type="text" id="student_dob" name="student_dob" class="form-control" value="" required
                                        data-inputmask='"mask": "9999-99-99"' data-mask></div>
                         </div>
                         <div class="col-md-7 col-sm-7 col-xs-7" style="padding-left: 0px; padding-right: 2px">
                             <div class="form-group">
                                 <label>Contact No.</label>
-                                <input class="form-control" placeholder="Phone Number" id="stdContact" name="stdContact"
+                                <input class="form-control" placeholder="Phone Number" id="student_contact" name="student_contact"
                                        required="required" data-inputmask='"mask": "999-9999999[9]"' data-mask>
                             </div>
                         </div>
                         <div class="col-md-5 col-sm-5 col-xs-5" style="padding-left: 0px; padding-right: 2px">
                             <div class="form-group">
                                 <label>Gender</label>
-                                <select class="form-control" id="stdGender" name="stdGender" required="required">
-                                    <option value="m">Male</option>
-                                    <option value="f">Female</option>
+                                <select class="form-control" id="student_gender" name="student_gender" required="required">
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input class="form-control" placeholder="Email" id="stdEmail" name="stdEmail"
+                            <input class="form-control" placeholder="Email" id="student_email" name="student_email"
                                    data-inputmask="'alias': 'email'" data-mask>
                         </div>
                         <div class="form-group">
                             <label>Guardian Name</label>
-                            <input class="form-control" placeholder="Student Guardian" id="stdGuardian"
-                                   name="stdGuardian">
+                            <input class="form-control" placeholder="Student Guardian" id="guardian_name"
+                                   name="guardian_name">
                         </div>
                         <div class="col-md-7 col-sm-7 col-xs-7" style="padding-left: 0px; padding-right: 0px">
                             <div class="form-group">
                                 <label>Guardian Contact</label>
-                                <input class="form-control" placeholder="Student Guardian" id="stdGuardianContact"
-                                       name="stdGuardianContact" data-inputmask='"mask": "999-9999999[9]"' data-mask>
+                                <input class="form-control" placeholder="Student Guardian" id="guardian_contact"
+                                       name="guardian_contact" data-inputmask='"mask": "999-9999999[9]"' data-mask>
                             </div>
                         </div>
                         <div class="col-md-5 col-sm-5 col-xs-5" style="padding-left: 0px; padding-right: 0px">
                             <div class="form-group">
                                 <label>Gender</label>
-                                <select class="form-control" id="stdGuardianGender" name="stdGuardianGender">
+                                <select class="form-control" id="guardian_gender" name="guardian_gender">
                                     <option value=" ">NA</option>
-                                    <option value="m">Male</option>
-                                    <option value="f">Female</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
                                 </select>
                             </div>
                         </div>
@@ -115,23 +115,23 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Address</label>
-                            <input class="form-control" placeholder="Address line 1" id="stdAddr1" name="stdAddr1">
-                            <input class="form-control" placeholder="Address line 2" id="stdAddr2" name="stdAddr2">
+                            <input class="form-control" placeholder="Address line 1" id="address_1" name="address_1">
+                            <input class="form-control" placeholder="Address line 2" id="address_2" name="address_2">
                             <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
-                                <input class="form-control" placeholder="PostCode" id="Postcode" name="Postcode">
+                                <input class="form-control" placeholder="PostCode" id="postcode" name="postcode">
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 0px">
-                                <input class="form-control" placeholder="City" id="City" name="City">
+                                <input class="form-control" placeholder="City" id="city" name="city">
                             </div>
-                            <input class="form-control" placeholder="State" id="State" name="State" value="Johor">
-                            <input class="form-control" placeholder="Country" id="Country" name="Country"
+                            <input class="form-control" placeholder="State" id="state" name="state" value="Johor">
+                            <input class="form-control" placeholder="Country" id="country" name="country"
                                    value="Malaysia">
                         </div>
                         <div class="form-group" style="padding-bottom: 0px">
                             <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 0px;">
                                 <div class="form-group">
                                     <label for="venue">Venue</label>
-                                    <select class="form-control" id="lessonVenue" name="lessonVenue">
+                                    <select class="form-control" id="lesson_venue" name="lesson_venue">
                                         <?php foreach ($venue_code_rows as $row) { ?>
                                             <option
                                                 value="<?php echo $row['venue_id']; ?>" <?php if ($row['default_place'] == 'Y') {
@@ -146,7 +146,7 @@
                             <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 0px;">
                                 <div class="form-group">
                                     <label>Lesson Type</label>
-                                    <select class="form-control" id="lessonType" name="lessonType">
+                                    <select class="form-control" id="lesson_type" name="lesson_type">
                                         <option disabled="" selected="selected" value=""> Select a lesson</option>
                                         <?php foreach ($course_level_rows as $row) { ?>
                                             <option
@@ -157,7 +157,7 @@
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 0px;">
                                 <label>Day</label>
-                                <select class="form-control" id="lessonDay" name="lessonDay">
+                                <select class="form-control" id="lesson_day" name="lesson_day">
                                     <option value="1">Mon</option>
                                     <option value="2">Tue</option>
                                     <option value="3">Wed</option>
@@ -170,7 +170,7 @@
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 0px; padding-right: 0px;">
                                 <label>Time</label>
-                                <select class="form-control" id="lessonTime" name="lessonTime"
+                                <select class="form-control" id="schedule_id" name="schedule_id"
                                         style="visibility: visible; display: inline-block">
                                 </select>
                             </div>
@@ -179,7 +179,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="btnSubmitStdInfo" disabled="disabled">Update!
+                    <button type="submit" class="btn btn-primary" id="btn-modal_submit" disabled="disabled">Update!
                     </button>
                 </div>
             </div>
@@ -237,7 +237,7 @@
                                 <div class="form-group" style="padding-top: 25px;">
                                     <div class="btn-group">
                                         <button type="submit" id="search" class="btn btn-primary">Search</button>
-                                        <button type="button" class="btn btn-danger btnStudentNew" id="btnStudentNew">
+                                        <button type="button" class="btn btn-danger btn-new_student" id="btnStudentNew">
                                             New Student
                                         </button>
                                     </div>
@@ -263,7 +263,7 @@
                                 <th>Action</th>
                                 <th>Name</th>
                                 <th>Age</th>
-                                <th>IC/Passport</th>
+                                <!--<th>IC/Passport</th> -->
                                 <th>Contact</th>
                                 <th>Course Day</th>
                                 <th>Course Time</th>
@@ -272,17 +272,22 @@
                             <tbody>
                             <?php foreach ($std_active_rows as $row) { ?>
                                 <tr>
-                                    <td id="student_id"><span id="student_id_span"><?php echo $row['id']; ?></span></td>
+                                    <td id="student_id"><span id="student_id_span"><?php echo $row['sid']; ?></span></td>
                                     <td>
-                                        <a href="#" class="studentDeactivate"><i class="fa fa-trash fa-lg"></i></a>&nbsp;
-                                        <a href="#" id="btnStudentUpdate" class="btnStudentUpdate"><i
-                                                class="fa fa-pencil-square-o fa-lg"></i></a>&nbsp;
-                                        <a href="#" class="showDetails"><i class="fa fa-info-circle fa-lg"></i></a>
+                                        <a href="#" id="btn-update" class="btn-update">
+                                            <i class="fa fa-pencil-square-o fa-lg"></i>
+                                        </a>&nbsp;
+                                        <a href="#" class="btn-deactivate">
+                                            <i class="fa fa-trash fa-lg"></i>
+                                        </a>&nbsp;
+                                        <a href="#" class="btn-show_detail">
+                                            <i class="fa fa-info-circle fa-lg"></i>
+                                        </a>
                                     </td>
-                                    <td id="student_name"><?php echo $row['std_name']; ?></td>
-                                    <td><?php echo (date('Y') - date('Y',strtotime($row['dob']))); ?></td>
-                                    <td><?php echo $row['std_identity']; ?></td>
-                                    <td><?php echo $row['std_contact']; ?></td>
+                                    <td id="student_name"><?php echo $row['student_name']; ?></td>
+                                    <td><?php echo $row['student_dob'] . "(" . (date('Y') - date('Y',strtotime($row['student_dob'])))." y.o)"; ?></td>
+                                    <!--<td><?php // echo $row['student_identity']; ?></td> -->
+                                    <td><?php echo $row['student_contact']; ?></td>
                                     <td><?php echo date('l', strtotime("Sunday +" . $row['slot_day'] . " Days")); ?></td>
                                     <td><?php echo $row['slot_time']; ?></td>
                                 </tr>
@@ -325,13 +330,13 @@
                                 <tbody>
                                 <?php foreach ($std_inactive_rows as $row) { ?>
                                     <tr>
-                                        <td id="student_id"><?php echo $row['id']; ?></td>
-                                        <td id="student_name"><?php echo $row['std_name']; ?></td>
-                                        <td><?php echo $row['std_identity']; ?></td>
-                                        <td><?php echo $row['std_contact']; ?></td>
+                                        <td id="student_id"><?php echo $row['sid']; ?></td>
+                                        <td id="student_name"><?php echo $row['student_name']; ?></td>
+                                        <td><?php echo $row['student_identity']; ?></td>
+                                        <td><?php echo $row['student_contact']; ?></td>
                                         <td><?php echo $row['guardian_name']; ?></td>
                                         <td><?php echo $row['guardian_contact']; ?></td>
-                                        <td><?php echo $row['course_id']; ?></td>
+                                        <td><?php echo $row['schedule_id']; ?></td>
                                         <td><span class="label label-danger">InActive</span></td>
                                         <td><a href="#" class="studentActivate"><i
                                                     class="fa fa-toggle-on fa-2x"></i></a></td>

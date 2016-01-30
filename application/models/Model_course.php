@@ -333,10 +333,12 @@ class Model_course extends CI_Model
         $schedule_day = $this->input->post('schedule_day');
         $schedule_hour = $this->input->post('schedule_hour');
         $schedule_minute = $this->input->post('schedule_minute');
+        $schedule_duration = $this->input->post('class_duration');
         $course_id = $this->input->post('course_id');
         $instructor_id = $this->input->post('instructor_id');
 
         $schedule_time = $schedule_hour .":".$schedule_minute .":00";
+        $schedule_time_end = date('H:i:s', strtotime($schedule_time ." + ".$schedule_duration."minutes"));
 
         // Assume there is no error
         $data['error'] = false;
@@ -375,8 +377,8 @@ class Model_course extends CI_Model
         $this->db->trans_begin();
 
         if ($data['error'] == false) {
-            $insertValues = array( $schedule_day, $schedule_time, $course_id, time());
-            $sql = "INSERT INTO course_schedule (slot_day, slot_time, course_id, timestamp) VALUES (?,?,?,?)";
+            $insertValues = array( $schedule_day, $schedule_time, $schedule_time_end, $course_id, time());
+            $sql = "INSERT INTO course_schedule (slot_day, slot_time, slot_time_end, course_id, timestamp) VALUES (?,?,?,?,?)";
             $this->db->query($sql, $insertValues);
 
             $this->db->trans_commit();

@@ -4,53 +4,52 @@
 var post_url;
 var activation_url;
 var who_click;
-var course_id = "";
+var schedule_id = "";
 // Modal for new student registration
 $(document).ready(function () {
     $(":input").inputmask();
 
-    $('#dob').datepicker({
+    $('#student_dob').datepicker({
         format: "yyyy-mm-dd",
         autoclose: true,
         todayHighlight: true
     });
 
-    $('#stdInfoModal').on('shown.bs.modal', function () {
+    $('#modal_main').on('shown.bs.modal', function () {
         if (who_click == 'NewStudent')
-            $('#stdName').focus();
+            $('#student_name').focus();
         else if (who_click == 'UpdateStudent')
-            $('#stdContact').focus();
+            $('#student_contact').focus();
     });
 
     // To make sure it is clean for the next show
-    $('#stdInfoModal').on('hidden.bs.modal', function () {
+    $('#modal_main').on('hidden.bs.modal', function () {
         course_id = "";
 
         $('#help-block').remove();
         document.getElementById("studentInfoFrm").reset();
     });
 
-    $('.btnStudentNew').on('click', function () {
+    $('.btn-new_student').on('click', function () {
         post_url = 'stdNew';
         who_click = 'NewStudent';
-        $('#stdName').prop("readonly", false);
-        $('#stdGender').prop("disabled", false);
-        $('#lessonVenue').prop("disabled", false);
-        $('#stdInfoModalTitle').text(' New Student');
-        $('#btnSubmitStdInfo').text('Create');
+        $('#student_name').prop("readonly", false);
+        $('#student_gender').prop("disabled", false);
+        $('#lesson_venue').prop("disabled", false);
+        $('#modal_title_text').text(' New Student');
+        $('#btn-modal_submit').text('Create');
         lessonSlotTimeCheck();
-        $('#stdInfoModal').modal('show');
+        $('#modal_main').modal('show');
     });
 
-    $('.btnStudentUpdate').on('click', function () {
+    $('.btn-update').on('click', function () {
         post_url = 'stdUpdate';
         who_click = 'UpdateStudent';
-        $('#stdName').prop("readonly", true);
-        $('#stdGender').prop("disabled", true);
-        //$('#lessonVenue').prop("disabled", true);
-        $('#stdInfoModalTitle').text(' Update Student Info');
-        $('#btnSubmitStdInfo').text(' Update!');
-        $('#stdInfoModal').modal('show');
+        $('#student_name').prop("readonly", true);
+        $('#student_gender').prop("disabled", true);
+        $('#modal_title_text').text(' Update Student Info');
+        $('#btn-modal_submit').text(' Update!');
+        $('#modal_main').modal('show');
     });
 
     // Student Activate
@@ -65,7 +64,7 @@ $(document).ready(function () {
     });
 
     // Student Details
-    $('#tblActiveStudent').on('click', '.showDetails', function () {
+    $('#tblActiveStudent').on('click', '.btn-show_detail', function () {
         var student_id = $(this).closest('tr').find('span#student_id_span').text();
         //alert(student_id);
         var url = "details/" + student_id;
@@ -73,14 +72,14 @@ $(document).ready(function () {
         var myWindow = window.open(url, "pageDetail", "width=800, height=600, scrollbars=yes");
     });
 
-    $("#lessonVenue, #lessonType, #lessonDay").on('change', function () {
-        $('#btnSubmitStdInfo').prop('disabled', true);
+    $("#lesson_venue, #lesson_type, #lesson_day").on('change', function () {
+        $('#btn-modal_submit').prop('disabled', true);
         lessonSlotTimeCheck();
 
     });
 
     // Student De-Activate
-    $('#tblActiveStudent').on('click', '.studentDeactivate', function () {
+    $('#tblActiveStudent').on('click', '.btn-deactivate', function () {
 
         activation_url = 'stdDeactivate';
         var student_id = $(this).closest('tr').children('td#student_id').text();
@@ -110,55 +109,56 @@ $(document).ready(function () {
         }
     });
 
-    // Student Update - retrieve lastest info from db
-    $('#tblActiveStudent').on('click', '.btnStudentUpdate', function () {
+    // =====================================================
+    // Student Update - retrieve latest info from db
+    // =====================================================
+    $('#tblActiveStudent').on('click', '.btn-update', function () {
 
         var student_id = $(this).closest('tr').children('td#student_id').text();
-        var url = "getStudentInfo/" + student_id;
+        var url = "ajax_student_details/" + student_id;
 
         $.getJSON(url, function (data) {
             console.log(data);
         }).done(function (data) {
             if (data.guardian_gender == null || data.guardian_gender == '') {
-                $(' #stdGuardianGender option').filter(function () {
+                $(' #guardian_gender option').filter(function () {
                     return $(this).html() == "NA";
                 }).prop("selected", true);
             }
-            $("#studentID").val(data.id);
-            $("#stdName").val(data.std_name);
-            $("#stdID").val(data.std_identity);
-            $("#dob").val(data.dob);
-            $("#stdContact").val(data.std_contact);
-            $('#stdGender').val(data.std_gender).prop("selected", true);
-            $("#stdEmail").val(data.std_email);
-            $("#stdGuardian").val(data.guardian_name);
-            $("#stdGuardianContact").val(data.guardian_contact);
-            $("#stdAddr1").val(data.addr_building);
-            $("#stdAddr2").val(data.addr_street);
-            $("#Postcode").val(data.addr_postkod);
-            $("#City").val(data.addr_city);
-            $("#State").val(data.addr_state);
-            $("#Country").val(data.addr_country);
-            $('#lessonDay').val(data.slot_day).prop("selected", true);
-            $('#lessonVenue').val(data.venue_id).prop("selected", true);
-            $('#lessonType').val(data.level_id).prop("selected", true);
+            $("#student_sid").val(data.sid);
+            $("#student_name").val(data.student_name);
+            $("#student_id").val(data.student_identity);
+            $("#student_dob").val(data.student_dob);
+            $("#student_contact").val(data.student_contact);
+            $('#student_gender').val(data.student_gender).prop("selected", true);
+            $("#student_email").val(data.student_email);
+            $("#guardian_name").val(data.guardian_name);
+            $("#guardian_contact").val(data.guardian_contact);
+            $("#address_1").val(data.address_line1);
+            $("#address_2").val(data.address_line2);
+            $("#postcode").val(data.postcode);
+            $("#city").val(data.city);
+            $("#state").val(data.state);
+            $("#country").val(data.country);
+            $('#lesson_day').val(data.slot_day).prop("selected", true);
+            $('#lesson_venue').val(data.venue_id).prop("selected", true);
+            $('#lesson_type').val(data.level_id).prop("selected", true);
+            schedule_id = data.schedule_id;
+
             lessonSlotTimeCheck();
 
-            course_id = data.course_id;
-
-        }).fail(function (data) {
-            alert("fail");
+        }).fail(function (data) {            console.log("Fail, Please contact administrator");
         });
     });
 
-    $("#stdID").on('input', function () {
+    $("#student_id").on('input', function () {
 
-        var UrlCheckIC = "checkID/" + $("#stdID").val();
+        var UrlCheckIC = "checkID/" + $("#student_id").val();
         $.getJSON(UrlCheckIC, function (data) {
             console.log(data);
         }).done(function (data) {
             if (data.record) {
-                $('#lessonType').val('').prop('selected', true);
+                $('#lesson_type').val('').prop('selected', true);
                 $('#statusMsg').append('<div class="alert alert-danger" id="help-block">' + data.message + '</div>');
             } else if (!data.record) {
                 $('#help-block').remove();
@@ -172,8 +172,8 @@ $(document).ready(function () {
         submitHandler: function (form, event) {
 
             $('#help-block').remove();
-            $('#btnSubmitStdInfo').prop('disabled', true);
-            $('#btnSubmitStdInfo').text('In Progress');
+            $('#btn-modal_submit').prop('disabled', true);
+            $('#btn-modal_submit').text('In Progress');
             var formData = $(form).serialize();
 
             $.ajax({
@@ -185,26 +185,28 @@ $(document).ready(function () {
                 })
                 // using the done promise callback
                 .done(function (data) {
-                    $('#btnSubmitStdInfo').text('DONE');
+                    $('#btn-modal_submit').text('DONE');
                     console.log(data);
                     if (data.error) {
                         $('#help-block').remove();
                         $('#statusMsg').append('<div class="alert alert-danger" id="help-block">' + data.message + '</div>');
+                        $('#btn-modal_submit').prop('disabled', false);
+                        $('#btn-modal_submit').text('Retry');
                     } else {// Success !
                         document.getElementById("studentInfoFrm").reset();
                         $('#help-block').remove();
                         $('#statusMsg').append('<div class="alert alert-success" id="help-block">' + data.message + '</div>');
                         setTimeout(function () {
-                            $('#stdInfoModal').modal('hide');
-                        }, 800);
+                            $('#modal_main').modal('hide');
+                        }, 100);
                         setTimeout(function () {
                             location.reload();
-                        }, 1500);
+                        }, 100);
 
                     }
                 }).fail(function (data) {
-                $('#btnSubmitStdInfo').prop('disabled', false);
-                $('#btnSubmitStdInfo').text('Retry');
+                $('#btn-modal_submit').prop('disabled', false);
+                $('#btn-modal_submit').text('Retry');
                 console.log(data);
             });
             event.preventDefault();
@@ -276,47 +278,36 @@ $(document).ready(function () {
 });
 
 function lessonSlotTimeCheck() {
-    var lessonType = $("#lessonType").val();
-    var venue_id = $("#lessonVenue").val();
-    var getDay = $("#lessonDay").val();
-    var url = "getSlotTimeWithCap/" + getDay + "/" + lessonType + "/" + venue_id;
-    $("#lessonTime").prop('disabled', true);
+    var lessonType = $("#lesson_type").val();
+    var venue_id = $("#lesson_venue").val();
+    var getDay = $("#lesson_day").val();
+    var url = "ajax_slot_capacity/" + getDay + "/" + lessonType + "/" + venue_id;
+
+    $("#schedule_id").prop('disabled', true);
     $.getJSON(url, function (data) {
         console.log(data);
     }).done(function (data) {
-        $("#lessonTime").prop('disabled', false);
-        $("#lessonTime").find('option').remove();
+        $("#schedule_id").prop('disabled', false);
+        $("#schedule_id").find('option').remove();
 
         if ((data.length == 0)) {
-            $("#lessonTime").append('<option value="">' + 'No slot available' + '</option>');
-            $('#btnSubmitStdInfo').prop('disabled', true);
+            $("#schedule_id").append('<option value="">' + 'No slot available' + '</option>');
+            $('#btn-modal_submit').prop('disabled', true);
         } else {
-            $('#btnSubmitStdInfo').prop('disabled', false);
             $.each(data, function (index, item) {
-                $("#lessonTime").append('<option value="' + item.id + '">' + item.slot_time_str + '</option>');
+                $("#schedule_id").append('<option value="' + item.schedule_id + '">' + item.slot_time_str + '</option>');
             });
             /* Due to the asyn properties of the json
              * THere might have some delay to wait for the result return
              * and it result the wrong course_id be selected
              * to prevent this we place the selection code inside this function
              */
-            if (course_id != "") {
-                $('select#lessonTime').val(course_id).prop("selected", true);
+            if (schedule_id != "") {
+                $('select#schedule_id').val(schedule_id).prop("selected", true);
             }
+            $('#btn-modal_submit').prop('disabled', false);
         }
     }).fail(function (data) {
         console.log(data);
     });
-}
-
-function copyID(this_ele) {
-
-    var id = $(this_ele).closest('div').children('input.temp_id').val();
-    var std_name = $(this_ele).closest('div').children('input.temp_StdName').val();
-
-    $('#id').val(id);
-    $('#stdName').val(std_name);
-
-    $('.search_result').remove();
-
 }

@@ -133,6 +133,14 @@ $(document).ready(function () {
 
     });
 
+    // detect input change, get the name from DB
+    $("#course_id").on("change", function () {
+        var ele = $(this).find('option:selected');
+        var duration = ele.attr('data-duration');
+        //alert(duration);
+        $('#class_duration').val(duration);
+    });
+
     $("#form_activation").validate({
         submitHandler: function (form, event) {
             var formData = $(form).serialize();
@@ -174,7 +182,7 @@ function get_course() {
         $("#course_id").find('option').remove();
         $("#course_id").append('<option value="" disabled="disabled" selected="selected"></option>');
         $.each(data, function (index, item) {
-            $("#course_id").append('<option value="' + item.id + '">' + item.level_name + '</option>');
+            $("#course_id").append('<option value="' + item.id + '" data-duration="'+item.duration_minute+'">' + item.level_name + '</option>');
         });
         $("#course_id").prop('disabled', false);
     }).fail(function (data) {
