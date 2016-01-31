@@ -47,10 +47,10 @@ $(document).ready(function() {
 				$('.search_result').remove();
 				$.each(data, function(i, item) {
 					var appendTxt = '';
-					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.std_name + ' (' + item.std_identity + ')</a>';
-					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.std_identity + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.std_name + '"></input>';
+					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.student_name + ' (' + item.student_identity + ')</a>';
+					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '">';
+					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.student_identity + '">';
+					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.student_name + '">';
 					appendTxt += '</div>';
 					$('#stdSearchResult').append(appendTxt);
 				});
@@ -144,20 +144,23 @@ $(document).ready(function() {
 				//$('#btnSubmitReplace').prop('disabled', true);
 				$.each(data, function(i, item) {
 					var appendTxt = '';
-					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.std_name + ' (' + item.std_identity + ')</a>';
-					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_lessonLeft" value="' + item.lesson_left + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_billID" value="' + item.bill_id + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_expiry" value="' + item.expiry_date + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_level" value="' + item.level_name + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_insturctor" value="' + item.instructor + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.std_identity + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.std_name + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdLog" value="' + item.log + '"></input>';
+					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.student_name + ' (' + item.student_identity + ')</a>';
+					appendTxt += '<input type="hidden" class="temp_id" value="' + item.sid + '">';
+					appendTxt += '<input type="hidden" class="temp_lessonLeft" value="' + item.lesson_left + '">';
+					appendTxt += '<input type="hidden" class="temp_billID" value="' + item.bill_id + '">';
+					appendTxt += '<input type="hidden" class="temp_expiry" value="' + item.expiry_date + '">';
+					appendTxt += '<input type="hidden" class="temp_level" value="' + item.level_name + '">';
+					appendTxt += '<input type="hidden" class="temp_insturctor" value="' + item.instructor + '">';
+					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.student_identity + '">';
+					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.student_name + '">';
+					appendTxt += '<input type="hidden" class="temp_StdLog" value="' + item.log + '">';
 					appendTxt += '</div>';
 					$('#stdSearchResult').append(appendTxt);
 				});
 
+			}).fail(function(data){
+				console.log("contact administrator");
+				console.log(data);
 			});
 		}
 	});
@@ -177,7 +180,6 @@ $(document).ready(function() {
 		$.getJSON(UrlGetName, function(data) {
 			console.log(data);
 		}).done(function(data) {
-			// dfdsf
 			$('#schedule_id option').remove();
 			var appendTxt = '';
 			appendTxt = '<option selected disabled> </option>';

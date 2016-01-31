@@ -356,11 +356,14 @@
     </section>
 </div>
 
+
 <script>
+    /*
     $(function () {
         $("#tblInactiveStudent").dataTable();
         $("#tblActiveStudent").dataTable({
             "iDisplayLength": 30
         });
     });
+    */
 </script>

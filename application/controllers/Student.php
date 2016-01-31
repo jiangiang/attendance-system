@@ -162,7 +162,7 @@ class Student extends CI_Controller {
 			}
 
 			$data['title'] = "Student Log";
-			$data['student_logs'] = $this -> model_student -> student_log();
+			$data['student_logs'] = $this -> model_student -> list_student_log();
 
 			$data['content'] = "student/student_log";
 			$this -> load -> view('templates/main', $data);

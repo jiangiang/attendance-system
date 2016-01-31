@@ -35,10 +35,10 @@ class Finance extends CI_Controller {
 
 			$data['title'] = "Student Payment Dashboard";
 
-			$data['bill_record_rows'] = $this -> model_finance -> tuitionFeeDashboard();
+			$data['bill_record_rows'] = $this -> model_finance -> list_student_bill();
 			$data['package_rows'] = $this -> model_finance -> get_package();
 
-			$data['content'] = "finance/receivable/tuitionFee";
+			$data['content'] = "finance/in_student_bill";
 			$this -> load -> view('templates/main', $data);
 
 		} else {
@@ -46,7 +46,7 @@ class Finance extends CI_Controller {
 		}
 	}
 
-	public function searchName($searchText) {
+	public function search_name($searchText) {
 		if ($this -> session -> userdata('logged_in')) {
 			echo $this -> model_finance -> search_name($searchText);
 		} else {
@@ -66,7 +66,7 @@ class Finance extends CI_Controller {
 
 	public function tuitionFeeReceive() {
 		if ($this -> session -> userdata('logged_in')) {
-			echo $this -> model_finance -> tuitionFeeReceive();
+			echo $this -> model_finance -> student_bill_pay();
 		} else {
 			redirect('login', 'refresh');
 		}
@@ -180,7 +180,7 @@ class Finance extends CI_Controller {
 
 			$data['payroll_records'] = $this -> model_finance -> employee_payroll();
 			// $data['get_years'] = $this -> model_finance -> get_year();
-			$data['content'] = "finance/payable/employee_payroll";
+			$data['content'] = "finance/out_employee_payroll";
 			$this -> load -> view('templates/main', $data);
 
 		} else {

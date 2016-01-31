@@ -6,15 +6,15 @@ class Model_dashboard extends CI_Model {
 
 	public function student_overdue() {
 		$sql = "SELECT 
-					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time,
+					s.sid, s.student_name, student_identity, cs.slot_day, cs.slot_time,
 					l.level_name, 
 				    count(bill_id) as overdue_count
 				FROM student_info s
 				LEFT JOIN course_schedule cs ON cs.course_id = s.schedule_id
 				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN course_level l on l.level_id = c.level_id
-				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.bill_id IS NULL
-				WHERE s.std_status='A'
+				LEFT JOIN student_attendance a ON a.student_id = s.sid AND a.bill_id IS NULL
+				WHERE s.student_status='A'
 				GROUP BY student_id
 					
 				;";
@@ -207,8 +207,8 @@ class Model_dashboard extends CI_Model {
 
 	public function student_attendance_dasheboard($year, $month, $day, $time_slot) {
 		$sql = "SELECT s.*, issue_date FROM student_info s
-				LEFT JOIN course_info c ON s.course_id = c.id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN course_info c ON cs.course_id = c.id
 				LEFT JOIN
 					(SELECT 
 						* 
@@ -219,17 +219,17 @@ class Model_dashboard extends CI_Model {
 					GROUP BY 
 						std_id 
 					ORDER BY 
-						issue_date DESC) as b ON b.std_id = s.id
+						issue_date DESC) as b ON b.std_id = s.sid
 				WHERE slot_time='" . $time_slot . "' AND slot_day = " . $day . " AND course_status='A'";
 		$query = $this -> db -> query($sql);
 		$student_list = $query -> result_array();
 		$attendance_array = array();
 
 		foreach ($student_list as $student) {
-			$student_id = $student['id'];
-			$student_name = $student['std_name'];
+			$student_id = $student['sid'];
+			$student_name = $student['student_name'];
 			$sql = "SELECT * FROM student_attendance a
-					LEFT JOIN student_info s ON s.id = a.student_id
+					LEFT JOIN student_info s ON s.sid = a.student_id
 					WHERE a.attend_date BETWEEN '" . $year . "-" . $month . "-01' AND '" . $year . "-" . $month . "-31' AND student_id=" . $student_id . " AND void='N' AND attendance_status='Y'
 					ORDER BY attend_date
 					";
@@ -307,9 +307,9 @@ class Model_dashboard extends CI_Model {
 	public function timetable_instructor($venue_id) {
 		
 		$sql = "SELECT cs.slot_day, cs.slot_time, duration_minute, TIME( DATE_ADD( concat( '2000-01-01 ', cs.slot_time ) , INTERVAL duration_minute MINUTE ) ) AS end_slot_time, group_concat( e.short_name ) AS instructors_name
-				FROM course_info c
+				FROM course_schedule cs
+				LEFT JOIN course_info c ON c.id= cs.course_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
 				LEFT JOIN course_level cl ON cl.level_id = c.level_id
 				LEFT JOIN venue_code vc ON vc.venue_id = c.venue_id
 				WHERE vc.venue_id = " . $venue_id . "
@@ -323,21 +323,39 @@ class Model_dashboard extends CI_Model {
 	}
 
 	public function timetable_class($venue_id) {
+		/*
 		$sql = "SELECT
 					cs.slot_day, cs.slot_time,
 					TIME( DATE_ADD( concat( '2000-01-01 ', cs.slot_time ) , INTERVAL duration_minute MINUTE ) ) AS end_slot_time,
 					group_concat( e.short_name ) AS instructors_name,
 					cl.level_short_name,
 					CONCAT(ifnull(sum(headcount),0), '/', sum(cl.max_capacity)) as headcount
-				FROM course_info c
+				FROM course_schedule cs
+				LEFT JOIN course_info  c ON c.id = cs.course_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN (SELECT count(s.id)as headcount, course_id  FROM student_info s WHERE s.std_status = 'A' GROUP BY course_id) s ON s.course_id = c.id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+				LEFT JOIN (SELECT count(s.Sid)as headcount, schedule_id  FROM student_info s WHERE s.student_status = 'A' GROUP BY schedule_id) s ON s.schedule_id = cs.schedule_id
 				LEFT JOIN course_level cl ON cl.level_id = c.level_id
 				LEFT JOIN venue_code vc ON vc.venue_id = c.venue_id
 				WHERE vc.venue_id = " . $venue_id . "
 				GROUP BY cs.slot_day, end_slot_time ,cl.level_id, cs.slot_time
 				";
+	*/
+		$sql = "SELECT
+					cs.slot_day, cs.slot_time,
+					slot_time_end AS end_slot_time,
+					group_concat( e.short_name ) AS instructors_name,
+					cl.level_short_name,
+					CONCAT(ifnull(sum(headcount),0), '/', sum(cl.max_capacity)) as headcount
+				FROM course_schedule cs
+				LEFT JOIN course_info  c ON c.id = cs.course_id
+				LEFT JOIN employee_info e ON e.id = c.instructor_id
+				LEFT JOIN (SELECT count(s.Sid)as headcount, schedule_id  FROM student_info s WHERE s.student_status = 'A' GROUP BY schedule_id) s ON s.schedule_id = cs.schedule_id
+				LEFT JOIN course_level cl ON cl.level_id = c.level_id
+				LEFT JOIN venue_code vc ON vc.venue_id = c.venue_id
+				WHERE vc.venue_id = " . $venue_id . "
+				GROUP BY cs.slot_day, end_slot_time ,cl.level_id, cs.slot_time
+				";
+
 		if ($query = $this -> db -> query($sql)) {
 			return $query -> result_array();
 		} else {

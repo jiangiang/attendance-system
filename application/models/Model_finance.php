@@ -4,7 +4,7 @@ class Model_finance extends CI_Model {
 		$this -> load -> database();
 	}
 
-	public function tuitionFeeDashboard() {
+	public function list_student_bill() {
 		$month = $this -> input -> post('searchMonth');
 		$name = $this -> input -> post('searchName');
 		$billType = $this -> input -> post('billType');
@@ -19,7 +19,7 @@ class Model_finance extends CI_Model {
 			$whereClause = $whereClause . "(issue_date BETWEEN '" . $year . "-" . $month . "-01' AND '" . $year . "-" . $month . "-31') AND ";
 		}
 		if (isset($name) && $name != "") {
-			$whereClause = $whereClause . "s.std_name like '%" . strtoupper($name) . "%' AND ";
+			$whereClause = $whereClause . "s.student_name like '%" . strtoupper($name) . "%' AND ";
 		}
 		if (isset($billType) && $billType != "") {
 			if ($billType == 'N') {
@@ -29,9 +29,9 @@ class Model_finance extends CI_Model {
 			}
 		}
 
-		$sql = "SELECT b.bill_id, b.receipt_no, s.std_name, b.issue_date, b.expiry_date, p.price, p.package_name , p.term 
+		$sql = "SELECT b.bill_id, b.receipt_no, s.student_name, b.issue_date, b.expiry_date, p.price, p.package_name , p.term
 				FROM student_bill b		
-				LEFT JOIN student_info s ON s.id = b.std_id
+				LEFT JOIN student_info s ON s.sid = b.std_id
 				LEFT JOIN course_package p ON p.package_id = b.package_id
 				WHERE " . $whereClause . " b.bill_status='A' 
 				ORDER BY issue_date DESC LIMIT 400
@@ -58,9 +58,9 @@ class Model_finance extends CI_Model {
 
 	public function search_name($searchText) {
 		$searchText = urldecode($searchText);
-		$sql = "SELECT id, std_name, std_identity
+		$sql = "SELECT sid, student_name, student_identity
 				FROM student_info 
-				WHERE id LIKE '%" . $searchText . "%' OR std_name LIKE '%" . $searchText . "%' OR std_identity LIKE '%" . $searchText . "%'";
+				WHERE sid LIKE '%" . $searchText . "%' OR student_name LIKE '%" . $searchText . "%' OR student_identity LIKE '%" . $searchText . "%'";
 
 		if ($query = $this -> db -> query($sql)) {
 			return json_encode($query -> result_array());
@@ -70,7 +70,7 @@ class Model_finance extends CI_Model {
 		}
 	}
 
-	public function tuitionFeeReceive() {
+	public function student_bill_pay() {
 		$stdID = $this -> input -> post('id');
 		$stdName = $this -> input -> post('stdName');
 		$stdIdentity = $this -> input -> post('stdID');
@@ -111,7 +111,7 @@ class Model_finance extends CI_Model {
 			$allow_custom_date = $result['allow_custom_date'];
 			$attendance_required = $result['attendance_required'];
 
-			// unique ID is regenrated by multiplicationof random number and timestamp
+			// unique ID is regenrated by multiplication of random number and timestamp
 			$timestamp = time();
 			$unique_id = mt_rand(11, 999999) * $timestamp % 10000000000;
 
@@ -137,9 +137,9 @@ class Model_finance extends CI_Model {
 			if ($allow_custom_date == 'N' && $attendance_required == 'Y') {
 
 				$sql = "SELECT s.*,cs.* FROM student_info s
-						LEFT JOIN course_info c ON course_id = c.id
-						LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
-						WHERE s.id = " . $stdID;
+						LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+						LEFT JOIN course_info c ON c.id = cs.course_id
+						WHERE s.sid = " . $stdID;
 				$query = $this -> db -> query($sql);
 				$result = $query -> row_array();
 

@@ -29,9 +29,9 @@
 							<tbody>
 								<?php foreach($students_attendance as $row){ ?>
 								<tr>
-									<td id="student_id"><?php echo $row['id']?></td>
-									<td id="student_name"><?php echo $row['std_name']?></td>
-									<td><?php echo $row['std_identity']?></td>
+									<td id="student_id"><?php echo $row['sid']?></td>
+									<td id="student_name"><?php echo $row['student_name']?></td>
+									<td><?php echo $row['student_identity']?></td>
 									<td><?php echo $row['slot_day']?></td>
 									<td><?php echo date('h:i A', strtotime($row['slot_time'])) ?></td>
 									<td><?php echo $row['level_name']?></td>

@@ -20,6 +20,11 @@ $(document).ready(function () {
         document.getElementById("form_schedule").reset();
     });
 
+    $('#search_venue').on('change', function () {
+
+        $('#search_form').submit();
+    });
+
     $('#btn_schedule_new').on('click', function () {
         post_url = 'course_create';
         who_click = 'NewCourse';
@@ -48,33 +53,33 @@ $(document).ready(function () {
         }
     });
 
-/*
-    // Course Update - retrieve lastest info from db
-    $('#tblActiveCourse').on('click', '.btnCourseUpdate', function () {
+    /*
+     // Course Update - retrieve lastest info from db
+     $('#tblActiveCourse').on('click', '.btnCourseUpdate', function () {
 
-        var course_id = $(this).closest('tr').children('td#course_id').text();
-        var url = "../getCourseInfo/" + course_id;
+     var course_id = $(this).closest('tr').children('td#course_id').text();
+     var url = "../getCourseInfo/" + course_id;
 
-        $.getJSON(url, function (data) {
-            console.log(data);
-        }).done(function (data) {
-            // lessonVenueReload();
-            var slot_time = data.slot_time;
+     $.getJSON(url, function (data) {
+     console.log(data);
+     }).done(function (data) {
+     // lessonVenueReload();
+     var slot_time = data.slot_time;
 
-            $("#courseID").val(data.id);
-            $("#lessonVenue").val(data.venue_id).prop("selected", true);
-            $("#courseLevel").val(data.level_id).prop("selected", true);
-            $("#courseInstructor").val(data.instructor_id).prop("selected", true);
-            
-            $("#lessonVenue").prop('disabled', true);
-            $("#courseLevel").prop('disabled', true);
+     $("#courseID").val(data.id);
+     $("#lessonVenue").val(data.venue_id).prop("selected", true);
+     $("#courseLevel").val(data.level_id).prop("selected", true);
+     $("#courseInstructor").val(data.instructor_id).prop("selected", true);
 
-        }).fail(function (data) {
-            //alert("fail");
-            console.log(data);
-        });
-    });
-*/
+     $("#lessonVenue").prop('disabled', true);
+     $("#courseLevel").prop('disabled', true);
+
+     }).fail(function (data) {
+     //alert("fail");
+     console.log(data);
+     });
+     });
+     */
     // Submission
     $("#form_schedule").validate({
         rules: {
@@ -182,7 +187,7 @@ function get_course() {
         $("#course_id").find('option').remove();
         $("#course_id").append('<option value="" disabled="disabled" selected="selected"></option>');
         $.each(data, function (index, item) {
-            $("#course_id").append('<option value="' + item.id + '" data-duration="'+item.duration_minute+'">' + item.level_name + '</option>');
+            $("#course_id").append('<option value="' + item.id + '" data-duration="' + item.duration_minute + '">' + item.level_name + '</option>');
         });
         $("#course_id").prop('disabled', false);
     }).fail(function (data) {

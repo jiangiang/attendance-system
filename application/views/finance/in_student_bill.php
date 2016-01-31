@@ -178,7 +178,7 @@
 											class="fa fa-pencil-square-o fa-2x"></i></a></td>
 									<td id="bill_id"><?php echo $row['bill_id']; ?></td>
 									<td><?php echo $row['receipt_no']; ?></td>
-									<td><?php echo $row['std_name']; ?></td>
+									<td><?php echo $row['student_name']; ?></td>
 									<td><?php echo $row['issue_date']; ?></td>
 									<td><?php echo $row['expiry_date']; ?></td>
 									<td><?php echo $row['price']; ?></td>

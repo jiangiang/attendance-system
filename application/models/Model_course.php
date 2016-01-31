@@ -304,10 +304,10 @@ class Model_course extends CI_Model
     // -----------------------------------------
 
     public function list_schedules($day, $venue_id) {
-        if(!isset($venue_id) || $venue_id == ""){
+        if(!isset($venue_id) || $venue_id == "" || is_null($venue_id)){
             $venue = "";
         }else{
-            $venue = " AND venue_id = ".$venue_id;
+            $venue = " AND c.venue_id = ".$venue_id;
         }
         $sql = "SELECT
 					c.*, s.*, v.venue_name, l.*, e.name as instuctor_name
@@ -363,7 +363,8 @@ class Model_course extends CI_Model
 					  cs.slot_day = ? AND
 					  c.venue_id =? AND
 					  c.id =? AND
-					  c.course_status='A'";
+					  c.course_status='A' AND
+					  c.allow_multi_instructor = 'N'";
         $whereClause = array($instructor_id, $schedule_time, $schedule_time, $schedule_day, $venue_id, $course_id);
 
         if ($query = $this->db->query($sql, $whereClause)) {

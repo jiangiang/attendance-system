@@ -133,6 +133,7 @@
 													<th>Duration</th>
 													<th>Max Capacity</th>
 													<th>Venue</th>
+													<th>Multi Instructor Allow</th>
 													<th>Action</th>
 												</tr>
 												</thead>
@@ -144,6 +145,7 @@
 														<td><?php echo $row['duration_minute']." mins"; ?></td>
 														<td><?php echo $row['max_capacity']; ?></td>
 														<td><?php echo $row['venue_name']; ?></td>
+														<td><?php echo $row['allow_multi_instructor']; ?></td>
 														<td>
 															<a href="#" class="courseDeactivate">
 																<i class="fa fa-trash fa-2x"></i>

@@ -20,7 +20,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">
-                        <span id="modalTitle">If you see me smth is wrong yo</span>
+                        <span id="modalTitle">If you see me something is wrong yo</span>
                     </h4>
                 </div>
                 <div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
@@ -50,7 +50,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Insturctor</label>
+                            <label>Instructor</label>
                             <select class="form-control" id="instructor_id" name="instructor_id">
                                 <option value="" selected disabled>Please select an option...</option>
                                 <?php foreach ($list_instructor as $row) { ?>
@@ -119,90 +119,92 @@
     <section class="content">
 
         <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="box">
-                    <div class="box-body" style="text-align: center">
-
-                        <div class="form-group form-inline">
-                            <div class="col-md-2 col-sm-2 col-xs-2">
-                                <div class="form-group">
-                                    <label for="venue" class="sr-only">Venue</label>
-                                    <select class="form-control" id="search_venue" name="search_venue">
-                                        <?php foreach ($list_venue as $row) { ?>
-                                            <option
-                                                value="<?php echo $row['venue_id']; ?>" <?php if ($row['default_place'] == 'Y') { ?> selected="selected"<?php } ?>>
-                                                <?php echo $row['venue_name']; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
+            <form id="search_form" name="search_form" method="post">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="box">
+                        <div class="box-body" style="text-align: center">
+                            <div class="form-group form-inline">
+                                <div class="col-md-2 col-sm-2 col-xs-2">
+                                    <div class="form-group">
+                                        <label for="venue" class="sr-only">Venue</label>
+                                        <select class="form-control" id="search_venue" name="search_venue">
+                                            <?php foreach ($list_venue as $row) { ?>
+                                                <option
+                                                    value="<?php echo $row['venue_id']; ?>" <?php if ($venue_id == $row['venue_id']) { ?> selected="selected"<?php } ?>>
+                                                    <?php echo $row['venue_name']; ?>
+                                                </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="btn-group">
-                                <a href="1">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 1) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Monday
-                                    </button>
-                                </a>
-                                <a href="2">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 2) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Tuesday
-                                    </button>
-                                </a>
-                                <a href="3">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 3) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Wednesday
-                                    </button>
-                                </a>
-                                <a href="4">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 4) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Thursday
-                                    </button>
-                                </a>
-                                <a href="5">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 5) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Friday
-                                    </button>
-                                </a>
-                                <a href="6">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 6) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Saturday
-                                    </button>
-                                </a>
-                                <a href="7">
-                                    <button type="button" class="btn btn-<?php if ($day_selected == 7) {
-                                        echo "success";
-                                    } else {
-                                        echo "default";
-                                    } ?>">Sunday
-                                    </button>
-                                </a>
-                                <a>
-                                    <button type="button" class="btn btn-danger" id="btn_schedule_new">Add New Course
-                                    </button>
-                                </a>
+                                <div class="btn-group">
+                                    <a href="1">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 1) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Monday
+                                        </button>
+                                    </a>
+                                    <a href="2">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 2) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Tuesday
+                                        </button>
+                                    </a>
+                                    <a href="3">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 3) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Wednesday
+                                        </button>
+                                    </a>
+                                    <a href="4">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 4) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Thursday
+                                        </button>
+                                    </a>
+                                    <a href="5">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 5) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Friday
+                                        </button>
+                                    </a>
+                                    <a href="6">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 6) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Saturday
+                                        </button>
+                                    </a>
+                                    <a href="7">
+                                        <button type="button" class="btn btn-<?php if ($day_selected == 7) {
+                                            echo "success";
+                                        } else {
+                                            echo "default";
+                                        } ?>">Sunday
+                                        </button>
+                                    </a>
+                                    <a>
+                                        <button type="button" class="btn btn-danger" id="btn_schedule_new">Add New
+                                            Course
+                                        </button>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <div class="row">
@@ -238,7 +240,7 @@
                                     $dayStr = date('l', strtotime("Sunday + $temp_slot_day Days"));
                                 ?>
                                 <tr>
-                                    <td id="current_schedule_id"><?php echo $row['id']; ?></td>
+                                    <td id="current_schedule_id"><?php echo $row['schedule_id']; ?></td>
                                     <td><?php echo $dayStr; ?></td>
                                     <td><?php echo date('h:i A', strtotime($row['slot_time'])); ?></td>
                                     <td><?php echo date('h:i A', strtotime($row['slot_time_end'])); ?></td>
@@ -248,10 +250,10 @@
                                     <td><?php echo $row['max_capacity']; ?></td>
                                     <td><?php echo $row['venue_name']; ?></td>
                                     <td><a href="#" class="deactivate_schedule"><i class="fa fa-trash fa-2x"></i></a>
-                                       <!-- &nbsp; <a href="#"
-                                                  id="btnCourseUpdate" class="btnCourseUpdate"><i
-                                                class="fa fa-pencil-square-o fa-2x"></i></a>
-                                                -->
+                                        <!-- &nbsp; <a href="#"
+                                                   id="btnCourseUpdate" class="btnCourseUpdate"><i
+                                                 class="fa fa-pencil-square-o fa-2x"></i></a>
+                                                 -->
                                     </td>
                                 </tr>
                             <?php } ?>

@@ -15,42 +15,42 @@ class Model_attendance extends CI_Model {
 		// 4th Union - list with replacement
 
 		$sql = "SELECT
-					s.id as student_id, s.std_name, lesson_left, lesson_overdue, slot_day, slot_time,
+					s.sid as student_id, s.student_name, lesson_left, lesson_overdue, slot_day, slot_time,
 					l.log, e.short_name as instructor_name, cl.level_name, issue_date,
 					a.attendance_status, a.replacement, a.id as attendance_id
 				FROM student_info s
 				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
 				LEFT JOIN (SELECT std_id, max(issue_date) issue_date FROM student_bill
-							GROUP BY std_id ORDER BY issue_date DESC ) b ON b.std_id = s.id
+							GROUP BY std_id ORDER BY issue_date DESC ) b ON b.std_id = s.sid
 				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN course_level cl ON cl.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN student_attendance a ON a.student_id = s.id AND a.attend_date = '".$slot_date."'
-				LEFT JOIN student_log l ON l.student_id = s.id
+				LEFT JOIN student_attendance a ON a.student_id = s.sid AND a.attend_date = '".$slot_date."'
+				LEFT JOIN student_log l ON l.student_id = s.sid
 				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_left FROM student_attendance
-							WHERE attendance_status='N' AND void='N' GROUP BY student_id ) al ON al.student_id = s.id
+							WHERE attendance_status='N' AND void='N' GROUP BY student_id ) al ON al.student_id = s.sid
 				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_overdue FROM student_attendance
-							WHERE bill_id IS NULL AND void='N' GROUP BY student_id ) av ON av.student_id = s.id
-				WHERE cs.slot_day = '".$slot_day."' AND cs.slot_time = '".$slot_time."' AND s.std_status = 'A'
+							WHERE bill_id IS NULL AND void='N' GROUP BY student_id ) av ON av.student_id = s.sid
+				WHERE cs.slot_day = '".$slot_day."' AND cs.slot_time = '".$slot_time."' AND s.student_status = 'A'
 				UNION
 				SELECT
-						s.id as student_id, s.std_name, lesson_left, lesson_overdue, slot_day, slot_time,
+						s.sid as student_id, s.student_name, lesson_left, lesson_overdue, slot_day, slot_time,
 						l.log, e.short_name as instructor_name, cl.level_name, issue_date,
 						a.attendance_status, a.replacement, a.id as attendance_id
 				FROM student_attendance a
-				LEFT JOIN  student_info s ON s.id = a.student_id
+				LEFT JOIN  student_info s ON s.sid = a.student_id
 				LEFT JOIN (SELECT std_id, max(issue_date) issue_date FROM student_bill
-							GROUP BY std_id ORDER BY issue_date DESC ) b ON b.std_id = s.id
+							GROUP BY std_id ORDER BY issue_date DESC ) b ON b.std_id = s.sid
 				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
 				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN course_level cl ON cl.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				LEFT JOIN student_log l ON l.student_id = s.id
+				LEFT JOIN student_log l ON l.student_id = s.sid
 				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_left FROM student_attendance
-							WHERE attendance_status='N' AND void='N' GROUP BY student_id ) al ON al.student_id = s.id
+							WHERE attendance_status='N' AND void='N' GROUP BY student_id ) al ON al.student_id = s.sid
 				LEFT JOIN ( SELECT student_id, COUNT(id) as lesson_overdue FROM student_attendance
-							WHERE bill_id IS NULL AND void='N' GROUP BY student_id ) av ON av.student_id = s.id
-				WHERE attendance_status='Y' AND cs.slot_time = '".$slot_time."' AND a.attend_date = '".$slot_date."'AND replacement = 'Y'";
+							WHERE bill_id IS NULL AND void='N' GROUP BY student_id ) av ON av.student_id = s.sid
+				WHERE attendance_status='Y' AND a.attend_time = '".$slot_time."' AND a.attend_date = '".$slot_date."'AND replacement = 'Y'";
 
 		if ($query = $this -> db -> query($sql)) {
 			// echo $this->db->last_query();
@@ -65,15 +65,15 @@ class Model_attendance extends CI_Model {
 		$searchText = urldecode($searchText);
 
 		$sql = "SELECT
-					s.id, s.std_name, std_identity, cs.slot_day, cs.slot_time,
+					s.sid, s.student_name, student_identity, cs.slot_day, cs.slot_time,
 					l.level_name, e.name as instructor, IFNULL(a.expiry_date, '-') as expiry_date, IFNULL(a.bill_id, '-') as bill_id,
 					IFNULL(a.last_attend, '-') as last_attend,
 				    IFNULL(attend_times,0) as attend_times, p.term,
 				    CASE WHEN p.term IS NULL THEN (-1*IFNULL(attend_times, 0)) ELSE (p.term - IFNULL(attend_times*1,0)) END AS lesson_left,
 				    log.*
 				FROM student_info s
-				LEFT JOIN course_info c ON c.id = s.course_id
-				LEFT JOIN course_schedule cs ON cs.schedule_id = c.schedule_id
+				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN course_info c ON c.id = cs.course_id
 				LEFT JOIN course_level l on l.level_id = c.level_id
 				LEFT JOIN employee_info e ON e.id = c.instructor_id
 				LEFT JOIN (
@@ -89,13 +89,13 @@ class Model_attendance extends CI_Model {
 						student_id
 					ORDER BY
 						attend_date DESC
-				    ) a ON a.student_id = s.id
+				    ) a ON a.student_id = s.sid
 				LEFT JOIN course_package p ON p.package_id = a.package_id 
-				LEFT JOIN (SELECT * FROM student_log WHERE void='N' GROUP BY student_id ORDER BY timestamp DESC LIMIT 1) log ON log.student_id = s.id 
+				LEFT JOIN (SELECT * FROM student_log WHERE void='N' GROUP BY student_id ORDER BY timestamp DESC LIMIT 1) log ON log.student_id = s.sid 
 				WHERE 
-					(s.id LIKE '%" . $searchText . "%' OR s.std_name LIKE '%" . $searchText . "%' OR s.std_identity LIKE '%" . $searchText . "%') 
-					 AND s.std_status='A'
-				GROUP BY s.id;";
+					(s.sid LIKE '%" . $searchText . "%' OR s.student_name LIKE '%" . $searchText . "%' OR s.student_identity LIKE '%" . $searchText . "%')
+					 AND s.student_status='A'
+				GROUP BY s.sid;";
 
 		if ($query = $this -> db -> query($sql)) {
 			return json_encode($query -> result_array());

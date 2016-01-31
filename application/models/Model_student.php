@@ -230,7 +230,7 @@ class Model_student extends CI_Model {
 		$check_field = $check_field && $this->check_field($student_dob);
 		$check_field = $check_field && $this->check_field($student_gender);
 		$check_field = $check_field && $this->check_field($student_contact);
-		$check_field = $check_field && $this->check_field($student_email);
+		//$check_field = $check_field && $this->check_field($student_email);
 		$check_field = $check_field && $this->check_field($schedule_id);
 
 
@@ -431,8 +431,8 @@ class Model_student extends CI_Model {
 					*
 				FROM student_info s
 				WHERE 
-					(s.id LIKE '%" . $searchText . "%' OR s.std_name LIKE '%" . $searchText . "%' OR s.std_identity LIKE '%" . $searchText . "%') 
-					 AND s.std_status='A'";
+					(s.sid LIKE '%" . $searchText . "%' OR s.student_name LIKE '%" . $searchText . "%' OR s.student_identity LIKE '%" . $searchText . "%')
+					 AND s.student_status='A'";
 
 		if ($query = $this -> db -> query($sql)) {
 			return json_encode($query -> result_array());
@@ -465,22 +465,22 @@ class Model_student extends CI_Model {
 		return json_encode($message);
 	}
 
-	public function student_log() {
+	public function list_student_log() {
 		$name = $this -> input -> post('searchName');
 
 		if (isset($name) && $name != "") {
-			$sql = "SELECT l.*, e.name as staff_name, s.std_name as student_name, s.id as student_id
+			$sql = "SELECT l.*, e.name as staff_name, s.student_name , s.sid as student_id
 				FROM student_log l
-				LEFT JOIN student_info s on s.id = l.student_id
+				LEFT JOIN student_info s on s.sid = l.student_id
 				LEFT JOIN employee_info e ON e.id = staff_id
-				WHERE void='N' AND s.std_name like '%?%'
+				WHERE void='N' AND s.student_name like '%?%'
 				ORDER BY timestamp DESC
 				LIMIT 300";
 			$query = $this -> db -> query($sql, array($name));
 		} else {
-			$sql = "SELECT l.*, e.name as staff_name, s.std_name as student_name, s.id as student_id
+			$sql = "SELECT l.*, e.name as staff_name, s.student_name, s.sid as student_id
 				FROM student_log l
-				LEFT JOIN student_info s on s.id = l.student_id
+				LEFT JOIN student_info s on s.sid = l.student_id
 				LEFT JOIN employee_info e ON e.id = staff_id
 				WHERE void='N' 
 				ORDER BY timestamp DESC

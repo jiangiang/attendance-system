@@ -33,9 +33,9 @@ $(document).ready(function() {
 				//$('#btnSubmitReplace').prop('disabled', true);
 				$.each(data, function(i, item) {
 					var appendTxt = '';
-					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.std_name + ' (' + item.std_identity + ')</a>';
-					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '"></input>';
-					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.std_name + '"></input>';
+					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.student_name + ' (' + item.student_identity + ')</a>';
+					appendTxt += '<input type="hidden" class="temp_id" value="' + item.sid + '">';
+					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.student_name + '">';
 					appendTxt += '</div>';
 					$('#stdSearchResult').append(appendTxt);
 				});
@@ -71,10 +71,10 @@ $(document).ready(function() {
 					$('#statusMsg').append('<div class="alert alert-success" id="help-block">' + data.message + '</div>');
 					setTimeout(function() {
 						$('#classReplaceModal').modal('hide');
-					}, 800);
+					}, 100);
 					setTimeout(function() {
 						location.reload();
-					}, 1500);
+					}, 100);
 
 				}
 			}).fail(function(data) {

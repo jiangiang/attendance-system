@@ -54,23 +54,22 @@ class Course extends CI_Controller {
 		if ($this -> session -> userdata('logged_in')) {
 
 			if (is_null($day)) {
-				$url = "Course/schedule/1";
+				$today_day = date('N');
+				$url = "Course/schedule/".$today_day;
 				redirect($url, 'refresh');
 			}
 
-			$venue = $this -> input -> post('search_venue');
+			$venue_id = $this -> input -> post('search_venue');
+			$data['venue_id'] = "";
 
-			$data['venue'] = "";
-
-			if (isset($venue) && $venue != "") {
-				$data['venue'] = $venue;
+			if (isset($venue_id) && $venue_id != "") {
+				$data['venue_id'] = $venue_id;
 			} else {
-				$data['venue'] = null;
+				$data['venue_id'] = null;
 			}
-
 			$data['day_selected'] = $day;
 			$data['title'] = "Schedule Summary";
-			$data['list_schedule'] = $this -> model_course -> list_schedules($day, $data['venue']);
+			$data['list_schedule'] = $this -> model_course -> list_schedules($day, $data['venue_id']);
 			$data['list_venue'] = $this -> model_course -> get_venue_code();
 			$data['list_course'] = $this -> model_course -> get_course_list();
 			$data['list_instructor'] = $this -> model_course -> get_instructor_list();

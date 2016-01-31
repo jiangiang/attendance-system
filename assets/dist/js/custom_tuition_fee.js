@@ -32,22 +32,23 @@ $(document).ready(function() {
 		if ($("#stdSearch").val() == "")
 			$('.search_result').remove();
 		else {
-			var UrlGetName = "searchName/" + $("#stdSearch").val();
+			var UrlGetName = "search_name/" + $("#stdSearch").val();
 			$.getJSON(UrlGetName, function(data) {
 				console.log(data);
 			}).done(function(data) {
-				// dfdsf
 				$('.search_result').remove();
 				$.each(data, function(i, item) {
 					var appendTxt = '';
-					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.std_name + ' (' + item.std_identity + ')</a>';
-					appendTxt += '<input type="hidden" class="temp_id" value="' + item.id + '/">';
-					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.std_identity + '"/>';
-					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.std_name + '"/>';
+					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.student_name + ' (' + item.student_identity + ')</a>';
+					appendTxt += '<input type="hidden" class="temp_id" value="' + item.sid + '"/>';
+					appendTxt += '<input type="hidden" class="temp_StdID" value="' + item.student_identity + '"/>';
+					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.student_name + '"/>';
 					appendTxt += '</div>';
 					$('#stdSearchResult').append(appendTxt);
 				});
 
+			}).fail(function(data){
+				console.log(data);
 			});
 		}
 	});

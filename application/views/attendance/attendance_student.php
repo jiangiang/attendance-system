@@ -187,7 +187,7 @@
                                 <?php foreach ($students_attendance as $row) { ?>
                                     <tr>
                                         <td id="student_id"><?php echo $row['student_id'] ?></td>
-                                        <td id="student_name"><?php echo $row['std_name'] ?></td>
+                                        <td id="student_name"><?php echo $row['student_name'] ?></td>
                                         <td><?php echo date('l', strtotime("Sunday +" . $row['slot_day'] . " Days")) . " " . date('G:i A', strtotime($row['slot_time'])); ?></td>
                                         <td>
                                             <?php
