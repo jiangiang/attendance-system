@@ -359,7 +359,7 @@ class Model_course extends CI_Model
 					LEFT JOIN course_level cl ON cl.level_id = c.level_id
 					WHERE
 					  c.instructor_id=? AND
-					  (cs.slot_time>=? AND cs.slot_time<=TIME( DATE_ADD( concat( '2000-01-01 ', ? ) , INTERVAL cl.duration_minute MINUTE ) )) AND
+					  (cs.slot_time>=? AND cs.slot_time<TIME( DATE_ADD( concat( '2000-01-01 ', ? ) , INTERVAL cl.duration_minute MINUTE ) )) AND
 					  cs.slot_day = ? AND
 					  c.venue_id =? AND
 					  c.id =? AND

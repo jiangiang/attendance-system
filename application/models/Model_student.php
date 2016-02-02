@@ -84,6 +84,7 @@ class Model_student extends CI_Model {
 					FROM student_info
 					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = cs.schedule_id
 				WHERE slot_day=".$slot_day." AND cl.level_id = ".$level." AND c.venue_id = ".$venue_id."
+				ORDER BY slot_time
 					";
 
 
@@ -267,7 +268,7 @@ class Model_student extends CI_Model {
 		}
 
 		if ($data['error'] == false) {
-			$values = array(strtoupper($student_name), strtoupper($student_id), $student_dob, $student_gender, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, $address_line1, $address_line2, $postcode, $city, $state, $country, $schedule_id);
+			$values = array(strtoupper($student_name), strtoupper($student_id), $student_dob, $student_gender, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, strtoupper($address_line1), strtoupper($address_line2), $postcode, strtoupper($city), strtoupper($state), strtoupper($country), $schedule_id);
 			$sqlStr = "INSERT INTO student_info (student_name, student_identity, student_dob, student_gender, student_contact, student_email, guardian_name, guardian_gender, guardian_contact, address_line1, address_line2, postcode, city, state, country, schedule_id) VALUES";
 			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			if ($this -> db -> query($sqlStr, $values)) {
