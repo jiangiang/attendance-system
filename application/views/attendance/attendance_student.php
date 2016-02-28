@@ -2,6 +2,10 @@
     .row .form-group {
         margin-bottom: 0px;
     }
+
+    #table_attendance_student tr {
+        'cursor: pointer;
+    }
 </style>
 
 
@@ -16,7 +20,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">
-                        <i class="fa fa-exchange fa-lg"></i> <span id="modal_title">Something is wrong if you see me</span>
+                        <i class="fa fa-exchange fa-lg"></i> <span
+                            id="modal_title">Something is wrong if you see me</span>
                     </h4>
                 </div>
                 <div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
@@ -94,7 +99,61 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary" disabled="disabled" id="btnSubmitReplace">Submit
-                        Replacement/ Overdue
+                        Replacement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!--form-replacement -->
+
+<!-- MODAL FOR CLASS CANCELLATION -->
+<form id="form_cancellation" name="form_cancellation">
+    <input type="hidden" id="action" name="action" value=""/>
+    <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="modal-class_cancel">
+        <div class="modal-dialog" style="margin-top: 2%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Class Cancellation
+                    </h4>
+                </div>
+                <input type="hidden" id="cancellation_date" name="cancellation_date" value="<?php echo $currDate; ?>"/>
+                <input type="hidden" id="cancellation_time" name="cancellation_time" value="<?php echo $next_slot_time; ?>"/>
+                <input type="hidden" id="extend_minute" name="extend_minute" value="0"/>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="cancellation_type" value="0" checked>
+                                NO ACTION
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="cancellation_type" value="1">
+                                EXTEND on NEXT CLASS
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="cancellation_type" value="2">
+                                CANCEL current class
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label>Additional Log</label>
+                            <textarea name="cancellation_log" maxlength="100" class="form-control" rows="3" placeholder="Max 100 Characters"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" disabled="disabled" id="btn-submit_cancellation">
+                        Submit
                     </button>
                 </div>
             </div>
@@ -120,7 +179,7 @@
                                 <div class="col-xs-1">
                                     <label>Date: </label>
                                 </div>
-                                <div class="col-xs-2">
+                                <div class="col-xs-2" style="padding-left: 2px; padding-right: 2px">
                                     <div class="form-group">
                                         <input type="text" id="slot_date" name="slot_date" class="form-control"
                                                value="<?php echo $currDate; ?>">
@@ -129,7 +188,7 @@
                                 <div class="col-xs-1">
                                     <label>Time: </label>
                                 </div>
-                                <div class="col-xs-2">
+                                <div class="col-xs-3" style="padding-left: 2px; padding-right: 2px">
                                     <div class="form-group">
                                         <select id="schedule_id" name="schedule_id" class="form-control">
                                             <option selected disabled></option>
@@ -145,23 +204,38 @@
                                     </div>
                                 </div>
                                 <?php if (count($slot_time_list) > 0) { ?>
-                                    <div class="col-xs-1">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-success btnClassReplace"
-                                                    id="btnClassReplace">
-                                                <i class="fa fa-user-plus fa-lg"></i> Replacement / Overdue
-                                            </button>
+                                    <?php if($check_cancellation==false){?>
+                                        <div class="col-xs-5 col-md-5" style="padding-left: 2px; padding-right: 2px; text-align: left;">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-success btnClassReplace"
+                                                        id="btnClassReplace"> Replacement
+                                                </button>
+
+                                                <button type="button" class="btn btn-danger btn-class_cancel"
+                                                        id="btn-class_cancel">
+                                                    Cancel Class
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    <?php } else{ ?>
+                                        <div class="col-xs-5 col-md-5" style="padding-left: 2px; padding-right: 2px; text-align: left;">
+                                            <div class="btn-group">
+                                                <button type="button" disabled="disabled" class="btn btn-danger btn-class_cancel"
+                                                        id="btn-class_cancel">
+                                                    Class Cancelled
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php }?>
                                 <?php } ?>
-                                <div class="col-xs-3"></div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
-        <form id="attendaceFrm" name="attendaceFrm">
+        <form id="form_attendance" name="form_attendance">
             <input type="hidden" name="session_scheddule_date" value="<?php echo $currDate; ?>"/>
             <input type="hidden" name="session_schedule_id" value="<?php echo $schedule_id; ?>"/>
             <div class="row">
@@ -169,17 +243,18 @@
                     <div class="box box-success">
                         <!-- /.box-header -->
                         <div class="box-body">
-                            <table class="table table-bordered table-hover" id="tblActiveStudent">
+                            <table class="table table-bordered table-hover" id="table_attendance_student">
                                 <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Slot</th>
-                                    <th>Lesson Remain/ Overdue</th>
+                                    <th>Remain</th>
                                     <th>Last Payment</th>
                                     <th>Level</th>
-                                    <th>Instructor</th>
+                                    <th>Instr.</th>
                                     <th>Last Log</th>
+                                    <th>Ext.</th>
                                     <th>Attend</th>
                                 </tr>
                                 </thead>
@@ -188,16 +263,16 @@
                                     <tr>
                                         <td id="student_id"><?php echo $row['student_id'] ?></td>
                                         <td id="student_name"><?php echo $row['student_name'] ?></td>
-                                        <td><?php echo date('l', strtotime("Sunday +" . $row['slot_day'] . " Days")) . " " . date('G:i A', strtotime($row['slot_time'])); ?></td>
+                                        <td><?php echo date('D', strtotime("Sunday +" . $row['slot_day'] . " Days")) . " " . date('g:i A', strtotime($row['slot_time'])); ?></td>
                                         <td>
                                             <?php
-                                                $lesson_left = 0;
-                                                if(!is_null(['lesson_overdue'])){
-                                                    $lesson_left = $lesson_left + ($row['lesson_overdue'] * -1);
-                                                }
-                                                if(!is_null(['lesson_left'])){
-                                                    $lesson_left = $lesson_left + $row['lesson_left'];
-                                                }
+                                            $lesson_left = 0;
+                                            if (!is_null(['lesson_overdue'])) {
+                                                $lesson_left = $lesson_left + ($row['lesson_overdue'] * -1);
+                                            }
+                                            if (!is_null(['lesson_left'])) {
+                                                $lesson_left = $lesson_left + $row['lesson_left'];
+                                            }
                                             ?>
                                             <span <?php if ($lesson_left <= 0) { ?> style="color: red" <?php } ?> ><?php echo $lesson_left ?></span>
                                         </td>
@@ -206,17 +281,20 @@
                                         <td><?php echo $row['instructor_name'] ?></td>
                                         <td><?php echo $row['log'] ?></td>
                                         <td>
+                                            <a class="clear_extension" href="#<?php echo $row['ce_id'] ?>" class=""><?php echo $row['extend_minute'] ?></a>
+                                        </td>
+                                        <td>
 
                                             <?php if (is_null($row['attendance_status'])) { ?>
                                                 <input type="checkbox" name="std_attend[]"
-                                                       value="<?php echo 'ovr_'.$row['student_id'].'_'.$next_slot_time.'_'.$currDate ?>">
-                                            <?php }else if ($row['attendance_status'] == 'N') { ?>
+                                                       value="<?php echo 'ovr_' . $row['student_id'] . '_' . $next_slot_time . '_' . $currDate ?>">
+                                            <?php } else if ($row['attendance_status'] == 'N') { ?>
                                                 <input type="checkbox" name="std_attend[]"
-                                                       value="<?php echo 'att_'.$row['attendance_id'] ?>">
-                                            <?php }else if ($row['attendance_status'] == 'Y') { ?>
-                                                <?php if($row['replacement'] == 'N'){ ?>
+                                                       value="<?php echo 'att_' . $row['attendance_id'] ?>">
+                                            <?php } else if ($row['attendance_status'] == 'Y') { ?>
+                                                <?php if ($row['replacement'] == 'N') { ?>
                                                     Taken
-                                                <?php }else if($row['replacement'] == 'Y'){ ?>
+                                                <?php } else if ($row['replacement'] == 'Y') { ?>
                                                     <span style="color: blue">Replacement</span>
                                                 <?php } ?>
                                             <?php } else { ?>
@@ -236,12 +314,12 @@
                             <div class="row">
                                 <div class="col-md-4"></div>
                                 <div class="col-md-4 col-xs-12">
-                                    <?php if (!empty($students_attendance)) { ?>
+                                    <?php if (!empty($students_attendance) && ($check_cancellation==false)) { ?>
                                         <button type="submit" class="btn btn-block btn-primary"
                                                 id="btnUpdateAttendance">Update Attendance
                                         </button>
                                     <?php } else { ?>
-                                        <button type="button" class="btn btn-block" disabled="disabled">No Student
+                                        <button type="button" class="btn btn-block" disabled="disabled"> DISABLED
                                         </button>
                                     <?php } ?>
                                 </div>

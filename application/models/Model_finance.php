@@ -34,7 +34,7 @@ class Model_finance extends CI_Model {
 				LEFT JOIN student_info s ON s.sid = b.std_id
 				LEFT JOIN course_package p ON p.package_id = b.package_id
 				WHERE " . $whereClause . " b.bill_status='A' 
-				ORDER BY issue_date DESC LIMIT 400
+				ORDER BY bill_id DESC LIMIT 400
 				;";
 
 		if ($query = $this -> db -> query($sql)) {
@@ -60,7 +60,7 @@ class Model_finance extends CI_Model {
 		$searchText = urldecode($searchText);
 		$sql = "SELECT sid, student_name, student_identity
 				FROM student_info 
-				WHERE sid LIKE '%" . $searchText . "%' OR student_name LIKE '%" . $searchText . "%' OR student_identity LIKE '%" . $searchText . "%'";
+				WHERE (sid LIKE '%" . $searchText . "%' OR student_name LIKE '%" . $searchText . "%' OR student_identity LIKE '%" . $searchText . "%') AND student_status='A'";
 
 		if ($query = $this -> db -> query($sql)) {
 			return json_encode($query -> result_array());
@@ -78,6 +78,7 @@ class Model_finance extends CI_Model {
 		$packageID = $this -> input -> post('billPackage');
 		$custom_attend_date = $this -> input -> post('slot_date');
 		$custom_attend_time = $this -> input -> post('slot_time');
+		$payment_date = $this -> input -> post('payment_date');
 
 		// Assume there is no error
 		$data['error'] = false;
@@ -104,7 +105,7 @@ class Model_finance extends CI_Model {
 			$query = $this -> db -> query('SELECT * FROM course_package WHERE package_id=' . $packageID);
 			$result = $query -> row_array();
 
-			$issue_date = date('Y-m-d');
+			$issue_date = $payment_date;
 			$expiry_date = date('Y-m-d', strtotime(date("Y-m-d", strtotime($issue_date)) . " +" . $result['expiry_month'] . " month"));
 
 			$package_term = $result['term'];
@@ -113,7 +114,7 @@ class Model_finance extends CI_Model {
 
 			// unique ID is regenrated by multiplication of random number and timestamp
 			$timestamp = time();
-			$unique_id = mt_rand(11, 999999) * $timestamp % 10000000000;
+			$unique_id = mt_rand(1001, 999999) * $timestamp % 10000000000;
 
 			// find the overdue classes
 			$sqlStr = " SELECT count(id) as overdue_count FROM student_attendance WHERE bill_id IS NULL AND student_id = " . $stdID;
@@ -147,6 +148,12 @@ class Model_finance extends CI_Model {
 					$this -> db -> trans_rollback();
 					$data['error'] = true;
 					$data['message'] = 'Data integrity problem!';
+					return json_encode($data);
+				}
+				if(is_null($result['slot_time']) || is_null($result['slot_day'])){
+					$this -> db -> trans_rollback();
+					$data['error'] = true;
+					$data['message'] = 'Please assign a class to this student.';
 					return json_encode($data);
 				}
 				$slot_time = $result['slot_time'];
@@ -245,7 +252,7 @@ class Model_finance extends CI_Model {
 	public function getBillInfo($billID) {
 		$sql = "SELECT * 
 				FROM student_bill b
-				JOIN student_info s ON b.std_id = s.id
+				JOIN student_info s ON b.std_id = s.sid
 				WHERE bill_id = " . $billID;
 		if ($query = $this -> db -> query($sql)) {
 			return json_encode($query -> row_array());

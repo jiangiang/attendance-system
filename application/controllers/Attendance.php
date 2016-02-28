@@ -36,6 +36,7 @@ class Attendance extends CI_Controller {
 			$data['schedule_id'] = $next_slot_time['schedule_id'];
 			$data['next_slot_time'] = $next_slot_time['slot_time'];
 
+			$data['check_cancellation'] = $this -> model_attendance -> class_cancellation_check($currDate, $next_slot_time['slot_time']);
 			$data['slot_time_list'] = $this -> model_attendance -> get_slot_time($currDay);
 			$data['students_attendance'] = $this -> model_attendance -> std_attendance_list($next_slot_time['slot_time'], $currDay, $currDate);
 
@@ -74,6 +75,18 @@ class Attendance extends CI_Controller {
 		if ($this -> session -> userdata('logged_in')) {
 			$currDay = date('N', strtotime($currDate));
 			echo json_encode($this -> model_attendance -> get_slot_time($currDay));
+		}
+	}
+
+	public function class_cancellation(){
+		if ($this -> session -> userdata('logged_in')) {
+			echo json_encode($this -> model_attendance -> class_cancellation());
+		}
+	}
+
+	public function class_extension_clear(){
+		if ($this -> session -> userdata('logged_in')) {
+			echo json_encode($this -> model_attendance -> class_extension_clear());
 		}
 	}
 

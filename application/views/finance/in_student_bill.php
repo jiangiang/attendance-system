@@ -41,30 +41,38 @@
             <input type="hidden" id="id" name="id" value=""/>
             <input type="hidden" id="billID" name="billID" value=""/>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Search Name/ID</label>
-                    <input class="form-control" placeholder="Student Name/ID" id="stdSearch" name="stdSearch">
-                    <div id="stdSearchResult"></div>
-                </div>
-                <div class="col-lg-7 col-xs-7" style="padding-left: 0px; padding-right: 2px">
+				<div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
+					<div class="form-group">
+						<label>Search Name/ID</label>
+						<input class="form-control" placeholder="Student Name/ID" id="stdSearch" name="stdSearch">
+						<div id="stdSearchResult"></div>
+					</div>
+				</div>
+				<div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
+					<div class="form-group">
+						<label>Payment Date</label>
+						<input class="form-control" placeholder="Payment Date" id="payment_date" name="payment_date" >
+					</div>
+				</div>
+                <div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
                     <div class="form-group">
                         <label>Student Name</label>
                         <input class="form-control" placeholder="Student ID" id="stdName" name="stdName" readonly="readonly" >
                     </div>
                 </div>
-                <div class="col-lg-5 col-xs-5" style="padding-left: 0px; padding-right: 2px">
+                <div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
                     <div class="form-group">
                         <label>Student ID</label>
                         <input class="form-control" placeholder="Student ID" id="stdID" name="stdID" readonly="readonly" >
                     </div>
                 </div>
-                <div class="col-lg-5 col-xs-5" style="padding-left: 0px; padding-right: 2px">
+                <div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
                     <div class="form-group">
                         <label>Bill Receipt No.</label>
                         <input class="form-control" placeholder="Bill Receipt No. (Optional)" id="stdReceipt" name="stdReceipt" >
                     </div>
                 </div>
-                <div class="col-lg-7 col-xs-7" style="padding-left: 0px; padding-right: 2px">
+                <div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
                     <div class="form-group">
                         <label>Package</label>
                         <select class="form-control" id="billPackage" name="billPackage" required>

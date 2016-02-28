@@ -259,8 +259,8 @@ class Model_student extends CI_Model {
 				$data['error'] = true;
 				$data['message'] = "Lesson Not Found In System";
 			} else if ($cap_left['capacityLeft'] == 0) {
-				$data['error'] = true;
-				$data['message'] = "Lesson Has been taken, please try again.";
+				//$data['error'] = true;
+				//$data['message'] = "Lesson Has been taken, please try again.";
 			}
 		} else {
 			//$error = $this -> db -> error();
@@ -348,8 +348,8 @@ class Model_student extends CI_Model {
 				$data['error'] = true;
 				$data['message'] = "Lesson Not Found In System";
 			} else if ($cap_left['capacityLeft'] == 0) {
-				$data['error'] = true;
-				$data['message'] = "Lesson Has been taken, please try again.";
+				// $data['error'] = true;
+				// $data['message'] = "Lesson Has been taken, please try again.";
 			}
 		} else {
 			//$error = $this -> db -> error();

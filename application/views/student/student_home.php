@@ -87,28 +87,7 @@
                             <input class="form-control" placeholder="Email" id="student_email" name="student_email"
                                    data-inputmask="'alias': 'email'" data-mask>
                         </div>
-                        <div class="form-group">
-                            <label>Guardian Name</label>
-                            <input class="form-control" placeholder="Student Guardian" id="guardian_name"
-                                   name="guardian_name">
-                        </div>
-                        <div class="col-md-7 col-sm-7 col-xs-7" style="padding-left: 0px; padding-right: 0px">
-                            <div class="form-group">
-                                <label>Guardian Contact</label>
-                                <input class="form-control" placeholder="Student Guardian" id="guardian_contact"
-                                       name="guardian_contact" data-inputmask='"mask": "999-9999999[9]"' data-mask>
-                            </div>
-                        </div>
-                        <div class="col-md-5 col-sm-5 col-xs-5" style="padding-left: 0px; padding-right: 0px">
-                            <div class="form-group">
-                                <label>Gender</label>
-                                <select class="form-control" id="guardian_gender" name="guardian_gender">
-                                    <option value=" ">NA</option>
-                                    <option value="M">Male</option>
-                                    <option value="F">Female</option>
-                                </select>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-6 col-xs-6" style="padding-left: 2px">

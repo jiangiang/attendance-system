@@ -8,6 +8,12 @@ var who_click;
 $(document).ready(function() {
 	$(":input").inputmask();
 
+	$('#payment_date').datepicker({
+		format : "yyyy-mm-dd",
+		autoclose : true,
+		todayHighlight : true
+	}).datepicker("setDate", new Date());;
+
 	$('#tuitionFeeReceivableModal').on('shown.bs.modal', function() {
 		$('#stdSearch').focus();
 		if (who_click == 'update') {
@@ -193,13 +199,14 @@ $(document).ready(function() {
 		$.getJSON(url, function(data) {
 			console.log(data);
 		}).done(function(data) {
+			$('#tuitionFeeReceivableModal').modal('show');
 			post_url = 'tuitionFeeUpdate';
 			who_click = 'update';
 
 			$("#billID").val(data.bill_id);
 			$("#stdReceipt").val(data.receipt_no);
-			$("#stdName").val(data.std_name);
-			$("#stdID").val(data.std_identity);
+			$("#stdName").val(data.student_name);
+			$("#stdID").val(data.student_identity);
 			$("#billPackage").val(data.package_id).prop('selected', true);
 
 			$('#stdSearch').prop("readonly", true);
