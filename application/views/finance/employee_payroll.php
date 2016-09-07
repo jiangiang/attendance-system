@@ -6,80 +6,12 @@
 	<input type="hidden" id="activationID" name="activationID">
 </form>
 
-<form id="salaryPayoutForm" name="salaryPayoutForm" autocomplete="off">
-	<input type="hidden" id="month" name="month" value="<?php echo $month;?>">
-	<input type="hidden" id="year" name = "year" value="<?php echo $selectedYear;?>">
-	<input type="hidden" id="sessionCount" name="sessionCount">
-	<input type="hidden" id="uid" name="uid" value=""/>
-  <div class="modal fade" role="dialog" aria-labelledby="myModalLabel"  id="salaryPayoutModal" >
-      <div class="modal-dialog" style="margin-top: 2%;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title"><i class="fa fa-user-plus fa-lg"></i> Salary Payout</h4>
-            </div>
-            <div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
-            <div class="modal-body">
-                <div class="col-lg-7 col-xs-7" style="padding-left: 0px; padding-right: 2px">
-                    <div class="form-group">
-                        <label>Employee Name</label>
-                        <input class="form-control" placeholder="Student ID" id="employeeName" name="employeeName" readonly="readonly" >
-                    </div>
-                </div>
-                <div class="col-lg-5 col-xs-5" style="padding-left: 0px; padding-right: 2px">
-                    <div class="form-group">
-                        <label>Employee ID</label>
-                        <input class="form-control" placeholder="Student ID" id="employeeID" name="employeeID" readonly="readonly" >
-                    </div>
-                </div>
-                <div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
-                    <div class="form-group">
-                    	<label>Default Salary</label>
-                    	<div class="input-group">
-                    		<span class="input-group-addon">RM</span>
-                    		<input class="form-control" placeholder="Default Salary" id="defaultSalary" name="defaultSalary" readonly="readonly" >
-                  		</div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-xs-6" style="padding-left: 0px; padding-right: 2px">
-                	 <div class="form-group">
-                    	<label>Adjustment</label>
-                    	<div class="input-group">
-                    		<span class="input-group-addon">RM</span>
-                    		<input class="form-control" placeholder="Adjustment" id="adjustmentSalary" name="adjustmentSalary" value="0">
-                  		</div>
-                    </div>
-                </div>
-                 <div class="col-lg-12 col-xs-12" style="padding-left: 0px; padding-right: 2px">
-                    <div class="form-group">
-                        <label>Remark</label>
-                        <input class="form-control" placeholder="Compulsory if bonus is entered" id="remark" name="remark">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-group">
-                    	<label>Amount</label>
-                    	<div class="input-group">
-                    		<span class="input-group-addon">RM</span>
-                    		<input class="form-control" placeholder="Amount" id="totalSalary" name="totalSalary" readonly="readonly" value="0.00" >
-                  		</div>
-                    </div>
-                    
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="btnSubmitSalary">Submit Salary</button>
-            </div>
-        </div>
-      </div>
-  </div>
-</form><!--form-newpayment-->
-
+<?php $this -> view('Modals/StaffPayroll'); ?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 	<section class="content-header">
-		<h1>Student Management</h1>
+		<h1><?php echo $title; ?></h1>
 	</section>
 
 	<section class="content">
@@ -168,7 +100,7 @@
 									<td>
 										<?php if($row['salary_status'] != 'Processed'){ ?>
 										&nbsp; <a href="#" id="btnPayout" class="btnSalaryPayout"><i
-											class="fa fa-check-circle fa-2x text-green"></i></a>
+											class="fa fa-arrow-right fa-2x text-red"></i></a>
 										<?php } ?>
 									</td>
 								</tr>

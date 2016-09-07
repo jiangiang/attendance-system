@@ -1,14 +1,15 @@
 	<?php
-class Model_student extends CI_Model {
+class Student_model extends CI_Model {
 	public function __construct() {
 		$this -> load -> database();
 	}
 
-	public function list_student() {
+	public function get_student_lists() {
 		$time = $this -> input -> post('searchTime');
 		$day = $this -> input -> post('searchDay');
 		$name = $this -> input -> post('searchName');
 		$whereClause = "";
+
 		if (isset($time) && $time != "") {
 			$whereClause = $whereClause . "(slot_time >='" . $time . ":00:00' AND slot_time < '" . ($time + 1) . ":00:00') AND ";
 		}
@@ -18,11 +19,12 @@ class Model_student extends CI_Model {
 		if (isset($name) && $name != "") {
 			$whereClause = $whereClause . "s.student_name like '%" . strtoupper($name) . "%' AND ";
 		}
-		$sql = "select s.*, cs.*, c.id as course_id, slot_time, slot_day
-				FROM student_info s
-				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
-				LEFT JOIN course_info c ON c.id = cs.course_id
-				WHERE " . $whereClause . "s.student_status='A' ORDER BY sid DESC LIMIT 80";
+		$sql = "select s.*, cs.*, c.id as class_id, slot_time, slot_day, z.description as IsActive
+				FROM student_list s
+				LEFT JOIN class_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN class_list c ON c.id = cs.class_id
+				LEFT JOIN _status_list z ON s.IsActive = z.status  
+				WHERE " . $whereClause . "s.IsActive = " .YES. " ORDER BY sid DESC LIMIT 30";
 		if ($query = $this -> db -> query($sql)) {
 
 			// print_r($query->result_array());
@@ -35,7 +37,7 @@ class Model_student extends CI_Model {
 	}
 
 	public function show_student_inactive() {
-		$sql = "select * from student_info WHERE student_status='I'";
+		$sql = "select * from student_list WHERE IsActive = " .YES. " = " .NO. " ";
 		if ($query = $this -> db -> query($sql)) {
 			return $query -> result_array();
 		} else {
@@ -45,26 +47,26 @@ class Model_student extends CI_Model {
 	}
 
 	// Model to get the levels available in the system
-	public function get_course_level() {
-		$sql = "SELECT * FROM course_level";
+	public function get_class_level() {
+		$sql = "SELECT * FROM class_level";
 		if ($query = $this -> db -> query($sql)) {
 			return $query -> result_array();
 		} else {
-			$error = $this -> db -> error();
-			echo "error <br>";
+			// $error = $this -> db -> error();
+			// echo "error <br>";
 		}
 	}
 
 	// Model to get venue from db
-	public function get_venue_code() {
-		$sql = "SELECT *, (CASE WHEN venue_id = (SELECT default_venue FROM system_profile WHERE id=1) THEN 'Y' ELSE 'N' END) AS default_place
-				FROM venue_code;";
+	public function get_school_details() {
+		$sql = "SELECT *, (CASE WHEN venue_id = (SELECT default_venue FROM application_profile WHERE id = 1) THEN 1 ELSE 2 END) AS default_place
+				FROM school_details;";
 
 		if ($query = $this -> db -> query($sql)) {
 			return $query -> result_array();
 		} else {
-			$error = $this -> db -> error();
-			echo "error <br>";
+			// $error = $this -> db -> error();
+			// echo "error <br>";
 		}
 	}
 
@@ -76,13 +78,13 @@ class Model_student extends CI_Model {
 					s.occupied_count, cl.max_capacity,
 					(cl.max_capacity - ifnull(s.occupied_count,0)) AS capacityLeft,
 					CONCAT(TIME_FORMAT(cs.slot_time, '%h:%i%p') ,' (', (cl.max_capacity - ifnull(s.occupied_count,0)),')') as slot_time_str
-				FROM course_schedule cs
-				LEFT JOIN course_info c ON c.id = cs.course_id
-				LEFT JOIN course_level cl ON cl.level_id= c.level_id
+				FROM class_schedule cs
+				LEFT JOIN class_list c ON c.id = cs.class_id
+				LEFT JOIN class_level cl ON cl.level_id= c.level_id
 				LEFT JOIN (
 					SELECT count(sid) as occupied_count, schedule_id
-					FROM student_info
-					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = cs.schedule_id
+					FROM student_list
+					WHERE IsActive = " .YES. " GROUP BY schedule_id) s ON s.schedule_id = cs.schedule_id
 				WHERE slot_day=".$slot_day." AND cl.level_id = ".$level." AND c.venue_id = ".$venue_id."
 				ORDER BY slot_time
 					";
@@ -100,9 +102,9 @@ class Model_student extends CI_Model {
 
 	public function ajax_student_details($std_id) {
 		$sql = "SELECT s.*, c.venue_id, c.level_id, cs.slot_time, cs.slot_day
-				FROM student_info s
-				LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
-				LEFT JOIN course_info c ON c.id = cs.course_id
+				FROM student_list s
+				LEFT JOIN class_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN class_list c ON c.id = cs.class_id
 				WHERE s.sid=?";
 		if ($query = $this -> db -> query($sql, array($std_id))) {
 			return json_encode($query -> row_array());
@@ -113,22 +115,23 @@ class Model_student extends CI_Model {
 	}
 
 	public function get_student_details($std_id) {
-		$sql = "SELECT s.*, c.*, cs.*, e.name as staff_name
-                FROM student_info s
-                LEFT JOIN course_schedule cs ON cs.schedule_id = s.schedule_id
-				LEFT JOIN course_info c ON c.id = cs.course_id
-				LEFT JOIN employee_info e ON e.id = c.instructor_id
-				WHERE s.sid=" . $std_id;
+		$sql = "SELECT s.*, c.*, cs.*, e.name as staff_name, z.description as IsActive
+                FROM student_list s
+                LEFT JOIN class_schedule cs ON cs.schedule_id = s.schedule_id
+				LEFT JOIN class_list c ON c.id = cs.class_id
+				LEFT JOIN employee_list e ON e.id = c.instructor_id
+				LEFT JOIN _status_list z ON s.IsActive = z.status  
+				WHERE s.sid = " . $std_id;
 		$query = $this -> db -> query($sql);
 		//print_r($query -> row_array());
 		return $query -> row_array();
 
 	}
 
-	public function get_student_details_course($std_id) {
+	public function get_student_details_class($std_id) {
 		$sql = "SELECT b.*, p.term from student_bill b
-				LEFT JOIN course_package p ON p.package_id = b.package_id 
-				WHERE std_id = " . $std_id . " AND bill_status = 'A' order by bill_id DESC LIMIT 1;";
+				LEFT JOIN class_package p ON p.package_id = b.package_id 
+				WHERE student_id = " . $std_id . " AND IsValid = 1 order by bill_id DESC LIMIT 1;";
 
 		$query = $this -> db -> query($sql);
 		$result = $query -> row_array();
@@ -163,8 +166,8 @@ class Model_student extends CI_Model {
 	public function get_student_payment_details($std_id) {
 		$sql = "SELECT *
 				FROM student_bill b
-				LEFT JOIN course_package p ON p.package_id = b.package_id
-				WHERE std_id = " . $std_id . " AND bill_status = 'A'
+				LEFT JOIN class_package p ON p.package_id = b.package_id
+				WHERE student_id = " . $std_id . " AND IsValid = 1
 				ORDER BY bill_id DESC";
 
 		$query = $this -> db -> query($sql);
@@ -177,7 +180,7 @@ class Model_student extends CI_Model {
 	public function get_student_attendance_history($std_id) {
 		$sql = "SELECT *
 				FROM student_attendance a
-				WHERE student_id = " . $std_id . " AND void = 'N' AND attendance_status='Y'
+				WHERE student_id = " . $std_id . " AND IsVoid = 2 AND IsTaken=1
 				ORDER BY attend_date DESC";
 
 		$query = $this -> db -> query($sql);
@@ -245,13 +248,13 @@ class Model_student extends CI_Model {
 		// mid-air collision check
 		// =============================
 		$sql = "SELECT (cl.max_capacity - ifnull(s.occupied_count,0)) AS capacityLeft
-				FROM course_schedule cs
-				LEFT JOIN course_info c ON c.id = cs.course_id
-				LEFT JOIN course_level cl ON cl.level_id= c.level_id
+				FROM class_schedule cs
+				LEFT JOIN class_list c ON c.id = cs.class_id
+				LEFT JOIN class_level cl ON cl.level_id= c.level_id
 				LEFT JOIN (
 					SELECT count(sid) as occupied_count, schedule_id
-					FROM student_info
-					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = ".$schedule_id;
+					FROM student_list
+					WHERE IsActive = " .YES. " GROUP BY schedule_id) s ON s.schedule_id = ".$schedule_id;
 
 		if ($query = $this -> db -> query($sql)) {
 			$cap_left = $query -> row_array();
@@ -269,7 +272,7 @@ class Model_student extends CI_Model {
 
 		if ($data['error'] == false) {
 			$values = array(strtoupper($student_name), strtoupper($student_id), $student_dob, $student_gender, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, strtoupper($address_line1), strtoupper($address_line2), $postcode, strtoupper($city), strtoupper($state), strtoupper($country), $schedule_id);
-			$sqlStr = "INSERT INTO student_info (student_name, student_identity, student_dob, student_gender, student_contact, student_email, guardian_name, guardian_gender, guardian_contact, address_line1, address_line2, postcode, city, state, country, schedule_id) VALUES";
+			$sqlStr = "INSERT INTO student_list (student_name, student_identity, student_dob, student_gender, student_contact, student_email, guardian_name, guardian_gender, guardian_contact, address_line1, address_line2, postcode, city, state, country, schedule_id) VALUES";
 			$sqlStr = $sqlStr . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			if ($this -> db -> query($sqlStr, $values)) {
 				$data['error'] = false;
@@ -334,13 +337,13 @@ class Model_student extends CI_Model {
 		// mid-air collision check
 		// =============================
 		$sql = "SELECT (cl.max_capacity - ifnull(s.occupied_count,0)) AS capacityLeft
-				FROM course_schedule cs
-				LEFT JOIN course_info c ON c.id = cs.course_id
-				LEFT JOIN course_level cl ON cl.level_id= c.level_id
+				FROM class_schedule cs
+				LEFT JOIN class_list c ON c.id = cs.class_id
+				LEFT JOIN class_level cl ON cl.level_id= c.level_id
 				LEFT JOIN (
 					SELECT count(sid) as occupied_count, schedule_id
-					FROM student_info
-					WHERE student_status ='A' GROUP BY schedule_id) s ON s.schedule_id = ".$schedule_id;
+					FROM student_list
+					WHERE IsActive = " .YES. " GROUP BY schedule_id) s ON s.schedule_id = ".$schedule_id;
 
 		if ($query = $this -> db -> query($sql)) {
 			$cap_left = $query -> row_array();
@@ -359,7 +362,7 @@ class Model_student extends CI_Model {
 		if ($data['error'] == false) {
 			$values = array($student_dob, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, $address_line1, $address_line2, $postcode, $city, $state, $country, $schedule_id, $student_sid);
 			$values = array($student_dob, $student_contact, $student_email, $guardian_name, $guardian_gender, $guardian_contact, $address_line1, $address_line2, $postcode, $city, $state, $country, $schedule_id, $student_sid);
-			$sqlStr = "UPDATE student_info SET student_dob=?, student_contact=?, student_email=?, guardian_name=?, guardian_gender=?, guardian_contact=?, address_line1=?, address_line2=?, postcode=?, city=?, state=?, country=?, schedule_id=? ";
+			$sqlStr = "UPDATE student_list SET student_dob=?, student_contact=?, student_email=?, guardian_name=?, guardian_gender=?, guardian_contact=?, address_line1=?, address_line2=?, postcode=?, city=?, state=?, country=?, schedule_id=? ";
 			$sqlStr = $sqlStr . " WHERE sid=?";
 			if ($this -> db -> query($sqlStr, $values)) {
 				$data['error'] = false;
@@ -377,7 +380,7 @@ class Model_student extends CI_Model {
 		$id = $this -> input -> post('activationID');
 		$name = $this -> input -> post('activationName');
 		$data = array($id, $name);
-		$sql = "UPDATE student_info SET student_status='I' WHERE sid=? AND student_name=?";
+		$sql = "UPDATE student_list SET IsActive = " .NO. " WHERE sid=? AND student_name=?";
 
 		if ($this -> db -> query($sql, $data)) {
 			$message['error'] = false;
@@ -395,7 +398,7 @@ class Model_student extends CI_Model {
 		$id = $this -> input -> post('activationID');
 		$name = $this -> input -> post('activationName');
 		$data = array($id, $name);
-		$sql = "UPDATE student_info SET std_status='A' WHERE id=? AND std_name=?";
+		$sql = "UPDATE student_list SET IsActive = " .YES. " WHERE id=? AND std_name=?";
 
 		if ($this -> db -> query($sql, $data)) {
 			$message['error'] = false;
@@ -409,7 +412,7 @@ class Model_student extends CI_Model {
 	}
 
 	public function checkID($ID) {
-		$sql = "SELECT student_identity FROM student_info WHERE student_identity=?";
+		$sql = "SELECT student_identity FROM student_list WHERE student_identity=?";
 		if ($query = $this -> db -> query($sql, array($ID))) {
 			if ($query -> num_rows() > 0) {
 				$message['message'] = "Someone is using the same IC too...";
@@ -424,88 +427,4 @@ class Model_student extends CI_Model {
 		}
 		return json_encode($message);
 	}
-
-	public function search_name($searchText) {
-		$searchText = urldecode($searchText);
-
-		$sql = "SELECT
-					*
-				FROM student_info s
-				WHERE 
-					(s.sid LIKE '%" . $searchText . "%' OR s.student_name LIKE '%" . $searchText . "%' OR s.student_identity LIKE '%" . $searchText . "%')
-					 AND s.student_status='A'";
-
-		if ($query = $this -> db -> query($sql)) {
-			return json_encode($query -> result_array());
-		} else {
-			$error = $this -> db -> error();
-			echo "error <br>";
-		}
-	}
-
-	public function student_log_new() {
-		$student_id = $this -> input -> post('student_id');
-		$log = $this -> input -> post('log');
-		$session_data = $this -> session -> userdata('logged_in');
-
-		if (!isset($student_id) || !isset($log) || $student_id == "" || $log == "") {
-			$message['error'] = true;
-			$message['message'] = " check the fill again";
-		} else {
-			$sql = "INSERT INTO student_log (student_id, log, staff_id, timestamp) VALUES (?,?,?,?) ";
-			$values = array($student_id, $log, $session_data['uid'], time());
-			if ($this -> db -> query($sql, $values)) {
-				$message['error'] = false;
-				$message['message'] = "success";
-				// $message['sql']=$this->db->last_query();
-			} else {
-				$message['error'] = true;
-				$message['message'] = "Activation Fail";
-			}
-		}
-		return json_encode($message);
-	}
-
-	public function list_student_log() {
-		$name = $this -> input -> post('searchName');
-
-		if (isset($name) && $name != "") {
-			$sql = "SELECT l.*, e.name as staff_name, s.student_name , s.sid as student_id
-				FROM student_log l
-				LEFT JOIN student_info s on s.sid = l.student_id
-				LEFT JOIN employee_info e ON e.id = staff_id
-				WHERE void='N' AND s.student_name like '%?%'
-				ORDER BY timestamp DESC
-				LIMIT 300";
-			$query = $this -> db -> query($sql, array($name));
-		} else {
-			$sql = "SELECT l.*, e.name as staff_name, s.student_name, s.sid as student_id
-				FROM student_log l
-				LEFT JOIN student_info s on s.sid = l.student_id
-				LEFT JOIN employee_info e ON e.id = staff_id
-				WHERE void='N' 
-				ORDER BY timestamp DESC
-				LIMIT 300";
-			$query = $this -> db -> query($sql);
-		}
-
-		return $query -> result_array();
-	}
-
-	public function student_log_void() {
-		// Activate member
-		$id = $this -> input -> post('activationID');
-		$data = array($id);
-		$sql = "UPDATE student_log SET void='Y' WHERE log_id=? ";
-
-		if ($this -> db -> query($sql, $data)) {
-			$message['error'] = false;
-			$message['message'] = "success";
-		} else {
-			$message['error'] = true;
-			$message['message'] = "Activation Fail";
-		}
-		return json_encode($message);
-	}
-
 }

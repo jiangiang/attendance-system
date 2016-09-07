@@ -10,7 +10,7 @@
 <div class="content-wrapper">
 	<section class="content-header">
 		<h1>
-			Student Attendance Dashboard - <?php echo date('F', strtotime("December +". $selectedMonth." Months"))." ". $selectedYear?> - <?php echo $selectedSlot;?>
+			<?php echo $title; ?> - <?php echo date('F', strtotime("December +". $selectedMonth." Months"))." ". $selectedYear?> - <?php echo $selectedSlot;?>
 		</h1>
 	</section>
 

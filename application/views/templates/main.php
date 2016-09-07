@@ -11,7 +11,7 @@
   	<?php $this -> view('templates/include_js'); ?>
   	<?php $this -> view('templates/navigator'); ?>
   	
-	<body class="layout-top-nav skin-green">
+	<body class="layout-top-nav skin-blue">
 		<div class="wrapper">
 		<?php $this -> view($content); ?>
 		<?php $this -> view('templates/footer'); ?>

@@ -4,9 +4,9 @@ class Model_staff extends CI_Model {
 		$this->load->database ();
 	}
 	public function show_staff_active() {
-		$sql = "select e.*, t.type_name, suggest_salary from employee_info e
+		$sql = "select e.*, t.type_name, suggest_salary from employee_list e
 				LEFT JOIN employee_type t ON t.type_id = e.employee_type_id 
-				 WHERE e.status='A'";
+				 WHERE e.IsActive=1";
 		if ($query = $this->db->query ( $sql )) {
 			
 			// print_r($query->result_array());
@@ -18,9 +18,9 @@ class Model_staff extends CI_Model {
 		}
 	}
 	public function show_staff_inactive() {
-		$sql = "select e.*, t.type_name from employee_info e
+		$sql = "select e.*, t.type_name from employee_list e
 				LEFT JOIN employee_type t ON t.type_id = e.employee_type_id 
-				 WHERE e.status='I'";
+				 WHERE e.IsActive=2";
 		if ($query = $this->db->query ( $sql )) {
 			return $query->result_array ();
 		} else {
@@ -40,7 +40,7 @@ class Model_staff extends CI_Model {
 		}
 	}
 	public function get_staff_info($staff_id) {
-		$sql = "select e.*, l.login_name, t.type_id from employee_info e
+		$sql = "select e.*, l.login_name, t.type_id from employee_list e
 				LEFT JOIN employee_type t ON t.type_id = e.employee_type_id 
 				LEFT JOIN employee_login l ON l.id = e.id
 				WHERE e.id=?";
@@ -98,14 +98,14 @@ class Model_staff extends CI_Model {
 					$addr_state,
 					$addr_country,
 					$staffType,
-					'A' 
+					1 
 			);
-			$sql = "INSERT INTO employee_info (name, short_name, identity, gender, contact, email, addr_building, addr_street, addr_postkod, addr_city, addr_state, addr_country, employee_type_id, status) VALUES";
+			$sql = "INSERT INTO employee_list (name, short_name, identity, gender, contact, email, addr_building, addr_street, addr_postkod, addr_city, addr_state, addr_country, employee_type_id, IsActive) VALUES";
 			$sql = $sql . " (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			$this->db->query ( $sql, $insertValues );
 			
 			if(!empty($loginName) && !empty($loginPwd)){
-				$sql = "SELECT id FROM employee_info WHERE identity ='".$staffIdentity."'";
+				$sql = "SELECT id FROM employee_list WHERE identity ='".$staffIdentity."'";
 				$query = $this->db->query ( $sql );
 				$query_result = $query ->row_array();
 				
@@ -119,7 +119,7 @@ class Model_staff extends CI_Model {
 			}
 			
 			$this->db->trans_commit ();
-			if($this->db->trans_status() === TRUE){
+			if($this->db->trans_IsActive() === TRUE){
 				$data ['message'] = 'Staff Created!';
 				$data ['error'] = false;
 			}
@@ -179,7 +179,7 @@ class Model_staff extends CI_Model {
 					$staffName
 			);
 			
-			$sql = "UPDATE employee_info SET short_name=?, contact=?, email=?, addr_building=?, addr_street=?, addr_postkod=?, addr_city=?, addr_state=?, addr_country=?, employee_type_id=? ";
+			$sql = "UPDATE employee_list SET short_name=?, contact=?, email=?, addr_building=?, addr_street=?, addr_postkod=?, addr_city=?, addr_state=?, addr_country=?, employee_type_id=? ";
 			$sql = $sql . " WHERE id=? AND name=?";
 			$this->db->query ( $sql, $insertValues );
 			
@@ -208,7 +208,7 @@ class Model_staff extends CI_Model {
 			
 			
 			$this->db->trans_commit ();
-			if($this->db->trans_status() === TRUE){
+			if($this->db->trans_IsActive() === TRUE){
 				$data ['message'] = 'Staff Created!';
 				$data ['error'] = false;
 			}
@@ -229,7 +229,7 @@ class Model_staff extends CI_Model {
 				$id,
 				$name 
 		);
-		$sql = "UPDATE employee_info SET status='I' WHERE id=? AND name=?";
+		$sql = "UPDATE employee_list SET IsActive=2 WHERE id=? AND name=?";
 		
 		if ($this->db->query ( $sql, $data )) {
 			$message ['error'] = false;
@@ -249,7 +249,7 @@ class Model_staff extends CI_Model {
 				$id,
 				$name 
 		);
-		$sql = "UPDATE employee_info SET status='A' WHERE id=? AND name=?";
+		$sql = "UPDATE employee_list SET IsActive=1 WHERE id=? AND name=?";
 		
 		if ($this->db->query ( $sql, $data )) {
 			$message ['error'] = false;
@@ -262,7 +262,7 @@ class Model_staff extends CI_Model {
 		return json_encode ( $message );
 	}
 	public function checkID($ID) {
-		$sql = "SELECT identity FROM employee_info WHERE identity=?";
+		$sql = "SELECT identity FROM employee_list WHERE identity=?";
 		if ($query = $this->db->query ( $sql, array (
 				$ID 
 		) )) {

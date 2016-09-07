@@ -23,6 +23,7 @@ $(document).ready(function() {
 	$('#btnCatNew').on('click', function() {
 		post_url = 'categoryCreate';
 		who_click = 'NewCat';
+		$('#catName').prop("readonly", false);
 		$("#catName").prop('disabled', false);
 		$('#catInfoModalTitle').text(' New Category');
 		$('#btnSubmit').text('Create');
@@ -47,7 +48,7 @@ $(document).ready(function() {
 	$('#tblActiveCategory').on('click', '.btnCategoryUpdate', function() {
 
 		var category_id = $(this).closest('tr').children('td#category_id').text();
-		var url = "getCategoryInfo/" + category_id;
+		var url = "ajax_get_category_details/" + category_id;
 
 		$.getJSON(url, function(data) {
 			console.log(data);
@@ -55,7 +56,9 @@ $(document).ready(function() {
 			$("#catID").val(data.level_id);
 			$("#catName").val(data.level_name);
 			$("#catInfo").val(data.level_info);
-			$("#private").val(data.private_state).prop('selected', true);
+			$("#CategoryDuration").val(data.duration_minute);
+			$("#CategoryMaxCapacity").val(data.max_capacity);
+			$("#private").val(data.IsPrivate).prop('selected', true);
 			post_url = 'categoryUpdate';
 			who_click = 'UpdateCat';
 			$('#catName').prop("readonly", true);

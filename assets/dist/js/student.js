@@ -27,7 +27,7 @@ $(document).ready(function () {
         course_id = "";
 
         $('#help-block').remove();
-        document.getElementById("studentInfoFrm").reset();
+        document.getElementById("studentInfoForm").reset();
     });
 
     $('.btn-new_student').on('click', function () {
@@ -59,7 +59,7 @@ $(document).ready(function () {
         $('#activateID').val(student_id);
         var r = confirm("Activate " + student_login + "'s Account?");
         if (r == true) {
-            $('#studentActivateFrm').submit();
+            $('#studentActivateForm').submit();
         }
     });
 
@@ -69,7 +69,7 @@ $(document).ready(function () {
         //alert(student_id);
         var url = "details/" + student_id;
 
-        var myWindow = window.open(url, "pageDetail", "width=800, height=600, scrollbars=yes");
+        var myWindow = window.open(url, "pageDetail", "width=900, height=650, scrollbars=yes");
     });
 
     $("#lesson_venue, #lesson_type, #lesson_day").on('change', function () {
@@ -90,7 +90,7 @@ $(document).ready(function () {
 
         var r = confirm("Deactivate " + student_name + "?");
         if (r == true) {
-            $('#studentActivationFrm').submit();
+            $('#studentActivationForm').submit();
         }
     });
 
@@ -105,7 +105,7 @@ $(document).ready(function () {
         $('#activationID').val(student_id);
         var r = confirm("Activate " + student_name + "?");
         if (r == true) {
-            $('#studentActivationFrm').submit();
+            $('#studentActivationForm').submit();
         }
     });
 
@@ -168,7 +168,7 @@ $(document).ready(function () {
     });
 
     // Submission
-    $("#studentInfoFrm").validate({
+    $("#studentInfoForm").validate({
         submitHandler: function (form, event) {
 
             $('#help-block').remove();
@@ -193,7 +193,7 @@ $(document).ready(function () {
                         $('#btn-modal_submit').prop('disabled', false);
                         $('#btn-modal_submit').text('Retry');
                     } else {// Success !
-                        document.getElementById("studentInfoFrm").reset();
+                        document.getElementById("studentInfoForm").reset();
                         $('#help-block').remove();
                         $('#statusMsg').append('<div class="alert alert-success" id="help-block">' + data.message + '</div>');
                         setTimeout(function () {
@@ -214,7 +214,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#studentActivationFrm").validate({
+    $("#studentActivationForm").validate({
         submitHandler: function (form, event) {
             var formData = $(form).serialize();
 

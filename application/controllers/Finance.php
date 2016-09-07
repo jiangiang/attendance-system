@@ -38,7 +38,7 @@ class Finance extends CI_Controller {
 			$data['bill_record_rows'] = $this -> model_finance -> list_student_bill();
 			$data['package_rows'] = $this -> model_finance -> get_package();
 
-			$data['content'] = "finance/in_student_bill";
+			$data['content'] = "finance/student_bill";
 			$this -> load -> view('templates/main', $data);
 
 		} else {
@@ -180,7 +180,7 @@ class Finance extends CI_Controller {
 
 			$data['payroll_records'] = $this -> model_finance -> employee_payroll();
 			// $data['get_years'] = $this -> model_finance -> get_year();
-			$data['content'] = "finance/out_employee_payroll";
+			$data['content'] = "finance/employee_payroll";
 			$this -> load -> view('templates/main', $data);
 
 		} else {

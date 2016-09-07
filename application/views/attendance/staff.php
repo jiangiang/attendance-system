@@ -20,63 +20,12 @@
 <!-- Custom Page JScript -->
 <script src="<?php echo base_url(); ?>assets/dist/js/custom_attendance_staff.js" type="text/javascript"></script>
 
-<!-- MODAL FOR CLASS REPLACEMENT -->
-<form id="staffAttendanceFrm" name="staffAttendanceFrm">
-	<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="modalStaffAttendance">
-		<div class="modal-dialog" style="margin-top: 2%;">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">
-						<span id="modal_title">Smth is wrong if you see me</span>
-					</h4>
-				</div>
-				<div id="statusMsg" style="padding-bottom: 0px; margin-bottom: 0px"></div>
-				<input type="hidden" id="staff_uid" name="staff_uid" value="" />
-				<div class="modal-body">
-					<div class="form-group">
-						<label>Search Name/ID</label> <input class="form-control" placeholder="Staff Name/ID / Passport" id="staffSearch"
-							name="staffSearch" autocomplete="off">
-						<div id="staffSearchResult"></div>
-					</div>
-					<div class="col-lg-7 col-xs-7" style="padding-left: 0px; padding-right: 2px">
-						<div class="form-group">
-							<label>Staff Name</label> <input class="form-control" placeholder="Staff Name" id="staffName" name="staffName"
-								readonly="readonly" required="required" autocomplete="off">
-						</div>
-					</div>
-					<div class="col-lg-5 col-xs-5" style="padding-left: 0px; padding-right: 2px">
-						<div class="form-group">
-							<label>Staff Identity</label> <input class="form-control" placeholder="Student ID" id="staffID" name="staffID"
-								readonly="readonly" required="required" autocomplete="off">
-						</div>
-					</div>
-					<div class="col-lg-5 col-xs-5" style="padding-left: 0px; padding-right: 2px">
-						<div class="form-group">
-							<label>Date</label> <input class="form-control" placeholder="YYYY-MM-DD" id="sessionDate"
-								name="sessionDate" required="required" autocomplete="off">
-						</div>
-					</div>
-					<div class="col-lg-7 col-xs-7" style="padding-left: 0px; padding-right: 2px">
-						<div class="form-group">
-							<label>Session Count</label> <input class="form-control" placeholder="Session Count." id="sessionCount" name="sessionCount"
-								required="required" autocomplete="off">
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary" disabled="disabled" id="btnSubmitAttendance">Submit Attendance</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</form>
-<!--form-replacement -->
+<?php $this -> view('Modals/StaffAttendanceForm'); ?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 	<section class="content-header">
-		<h1>Staff Attendance - <?php echo date('F', strtotime("December +". $month." Months"));?></h1>
+		<h1><?php echo $title; ?> - <?php echo date('F', strtotime("December +". $month." Months"));?></h1>
 	</section>
 
 	<section class="content">

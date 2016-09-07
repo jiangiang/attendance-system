@@ -3,42 +3,75 @@
  * */
 
 .table-striped > tbody > tr:nth-of-type(even) {
-	background-color: #eacebe;
+    background-color: #586EA1;
 }
 
 .table > thead > tr > th {
 
-	background-color: #bc6b3c;
-	text-align: center;
-	color: #FFFFFF
+    background-color: #123652;
+    text-align: center;
+    color: #FFFFFF
 }
 
 .table > tbody > tr > td {
-	font-weight: bold;
-	font-size: 14px;
-	text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
 }
 
 .table > tfoot > tr > td {
-	background-color: #f9f9f9;
+    background-color: #8799C1;
 }
 
 .box-header, .box-body {
-	padding: 5px;
+    padding: 5px;
 }
 
 .content-header {
-	padding-top: 5px
+    padding-top: 5px
 }
 
 .box {
-	margin-bottom: 5px;
-}
-.form-group {
-	padding-bottom: 1px;
-	margin-bottom: 1px;
-}
-.content {
-	padding-top: 5px;
+    margin-bottom: 5px;
 }
 
+.form-group {
+    padding-bottom: 1px;
+    margin-bottom: 1px;
+}
+
+.content {
+    padding-top: 5px;
+}
+
+.content-wrapper {
+    background-color: #e9ebee;
+}
+
+.main-header {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.navbar-nav > li > a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.main-header > .navbar {
+    min-height: 30px;
+}
+
+.status-message {
+    padding-bottom: 0px;
+    margin-bottom: 0px
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > tfoot > tr > td,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > thead > tr > th {
+    padding: 5px;
+}

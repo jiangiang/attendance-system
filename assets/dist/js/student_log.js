@@ -8,7 +8,7 @@ var course_id = "";
 // Modal for new student registration
 $(document).ready(function() {
 
-	$('#studentLogFrm').on('click', '.copySearchValue', function() {
+	$('#studentLogForm').on('click', '.copySearchValue', function() {
 		copyID($(this));
 	});
 
@@ -20,11 +20,11 @@ $(document).ready(function() {
 	});
 
 	// detect input change, get the name from DB
-	$("#stdSearch").on("keyup", function() {
-		if ($("#stdSearch").val() == "")
+	$("#studentSearch").on("keyup", function() {
+		if ($("#studentSearch").val() == "")
 			$('.search_result').remove();
 		else {
-			var UrlGetName = "searchName/" + $("#stdSearch").val();
+			var UrlGetName = "searchName/" + $("#studentSearch").val();
 			$.getJSON(UrlGetName, function(data) {
 				console.log(data);
 			}).done(function(data) {
@@ -35,9 +35,9 @@ $(document).ready(function() {
 					var appendTxt = '';
 					appendTxt = '<div class="alert alert-info search_result">  <a href="#" class="copySearchValue">' + item.student_name + ' (' + item.student_identity + ')</a>';
 					appendTxt += '<input type="hidden" class="temp_id" value="' + item.sid + '">';
-					appendTxt += '<input type="hidden" class="temp_StdName" value="' + item.student_name + '">';
+					appendTxt += '<input type="hidden" class="temp_studentName" value="' + item.student_name + '">';
 					appendTxt += '</div>';
-					$('#stdSearchResult').append(appendTxt);
+					$('#studentSearchResult').append(appendTxt);
 				});
 
 			});
@@ -45,11 +45,11 @@ $(document).ready(function() {
 	});
 	
 	// Submission -- Replacement
-	$("#studentLogFrm").validate({
+	$("#studentLogForm").validate({
 		submitHandler : function(form, event) {
 
 			$('#help-block').remove();
-			$('#btnSubmitReplace').prop('disabled', true);
+			$('#btnSubmit').prop('disabled', true);
 			var formData = $(form).serialize();
 
 			$.ajax({
@@ -63,7 +63,7 @@ $(document).ready(function() {
 			.done(function(data) {
 				console.log(data);
 				if (data.error) {
-					$('#btnSubmitReplace').prop('disabled', false);
+					$('#btnSubmit').prop('disabled', false);
 					$('#help-block').remove();
 					$('#statusMsg').append('<div class="alert alert-danger" id="help-block">' + data.message + '</div>');
 				} else {// Success !
@@ -74,11 +74,11 @@ $(document).ready(function() {
 					}, 100);
 					setTimeout(function() {
 						location.reload();
-					}, 100);
+					}, 50);
 
 				}
 			}).fail(function(data) {
-				$('#btnSubmitReplace').prop('disabled', false);
+				$('#btnSubmit').prop('disabled', false);
 				console.log(data);
 			});
 			event.preventDefault();
@@ -130,10 +130,10 @@ $(document).ready(function() {
 function copyID(this_ele) {
 
 	var student_id = $(this_ele).closest('div').children('input.temp_id').val();
-	var std_name = $(this_ele).closest('div').children('input.temp_StdName').val();
+	var student_name = $(this_ele).closest('div').children('input.temp_studentName').val();
 
 	$('#student_id').val(student_id);
-	$('#stdName').val(std_name);
+	$('#studentName').val(student_name);
 	$('.search_result').remove();
 
 }

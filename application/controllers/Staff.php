@@ -21,7 +21,7 @@ class Staff extends CI_Controller {
 			$data ['get_staff_type'] = $this->model_staff->get_staff_type ();
 			
 			
-			$data['content'] = "staff/summary";
+			$data['content'] = "staff/list";
 			$this -> load -> view('templates/main', $data);
 		} else {
 			redirect ( 'login', 'refresh' );

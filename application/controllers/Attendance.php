@@ -40,7 +40,7 @@ class Attendance extends CI_Controller {
 			$data['slot_time_list'] = $this -> model_attendance -> get_slot_time($currDay);
 			$data['students_attendance'] = $this -> model_attendance -> std_attendance_list($next_slot_time['slot_time'], $currDay, $currDate);
 
-			$data['content'] = "attendance/attendance_student";
+			$data['content'] = "attendance/student";
 			$this -> load -> view('templates/main', $data);
 			
 		} else {
@@ -128,7 +128,7 @@ class Attendance extends CI_Controller {
 			$data['years'] = $this -> model_attendance -> staffAttendance_getYear();
 			$data['staff_attendance'] = $this -> model_attendance -> staffAttendanceDashboard();
 			
-			$data['content'] = "attendance/attendance_staff";
+			$data['content'] = "attendance/staff";
 			$this -> load -> view('templates/main', $data);
 		
 		} else {

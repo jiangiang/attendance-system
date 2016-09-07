@@ -38,14 +38,13 @@ class Login extends CI_Controller {
 		$result = $this->model_login->login ( $username, $password );
 		
 		if ($result) {
-			$sess_array = array ();
 			foreach ( $result as $row ) {
-				$sess_array = array (
+				$session_array = array (
 						'uid' => $row->id,
 						'username' => $row->login_name,
 						'type' => $row->employee_type_id
 				);
-				$this->session->set_userdata ( 'logged_in', $sess_array );
+				$this->session->set_userdata ( 'logged_in', $session_array );
 			}
 			return TRUE;
 		} else {

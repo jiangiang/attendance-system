@@ -14,7 +14,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 	<section class="content-header">
-		<h1>Salary Payment Overview - <?php echo date('F', strtotime("December +". $month." Months"));?> <?php echo $selectedYear;?></h1>
+		<h1><?php echo $title; ?> - <?php echo date('F', strtotime("December +". $month." Months"));?> <?php echo $selectedYear;?></h1>
 	</section>
 
 	<section class="content">
@@ -77,7 +77,7 @@
 			<div class="col-xs-12">
 				<div class="box box-success">
 					<div class="box-header">
-						<h4 class="box-title">Payment are all in Ringgit Malaysia</h3>
+						<h4 class="box-title">Payment are all in Ringgit Malaysia</h4>
 					</div>
 					<div class="box-body">
 						<table class="table table-bordered table-hover" id="tblEmployeeSalaryPayout">

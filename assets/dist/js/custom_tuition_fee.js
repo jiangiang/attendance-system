@@ -1,7 +1,7 @@
 /**
  *
  */
-var post_url;
+var post_url = 'tuitionFeeReceive';
 var activation_url;
 var who_click;
 
@@ -25,7 +25,7 @@ $(document).ready(function() {
 	$('#tuitionFeeReceivableModal').on('hidden.bs.modal', function() {
 		$('#help-block').remove();
 		$('#btnSubmitTuitionFeeReceivable').prop('disabled', false);
-		document.getElementById("tuitionFeeReceivableFrm").reset();
+		document.getElementById("tuitionFeeReceivableForm").reset();
 	});
 
 	$('#btnTuitionFeeReceivable').on('click', function() {
@@ -59,7 +59,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#tuitionFeeReceivableFrm').on('click', '.copySearchValue', function() {
+	$('#tuitionFeeReceivableForm').on('click', '.copySearchValue', function() {
 		copyID($(this));
 	});
 
@@ -71,7 +71,7 @@ $(document).ready(function() {
 	});
 
 	// Submission
-	$("#tuitionFeeReceivableFrm").validate({
+	$("#tuitionFeeReceivableForm").validate({
 		submitHandler : function(form, event) {
 
 			$('#help-block').remove();
@@ -85,7 +85,6 @@ $(document).ready(function() {
 				dataType : 'json',
 				encode : true
 			})
-			// using the done promise callback
 			.done(function(data) {
 				$('#btnSubmitStdInfo').prop('disabled', false);
 				console.log(data);
@@ -93,15 +92,15 @@ $(document).ready(function() {
 					$('#btnSubmitTuitionFeeReceivable').prop('disabled', false);
 					$('#help-block').remove();
 					$('#statusMsg').append('<div class="alert alert-danger" id="help-block">' + data.message + '</div>');
-				} else {// Success !
+				} else {
 					$('#help-block').remove();
 					$('#statusMsg').append('<div class="alert alert-success" id="help-block">' + data.message + '</div>');
 					setTimeout(function() {
 						$('#tuitionFeeReceivableModal').modal('hide');
-					}, 800);
+					}, 500);
 					setTimeout(function() {
 						location.reload();
-					}, 1500);
+					}, 500);
 
 				}
 			}).fail(function(data) {
@@ -123,7 +122,7 @@ $(document).ready(function() {
 
 		var r = confirm("Deactivate bill " + bill_id + "?");
 		if (r == true) {
-			$('#billActivationFrm').submit();
+			$('#billActivationForm').submit();
 		}
 	});
 
@@ -159,7 +158,7 @@ $(document).ready(function() {
 		});
 	});
 
-	$("#billActivationFrm").validate({
+	$("#billActivationForm").validate({
 		submitHandler : function(form, event) {
 			var formData = $(form).serialize();
 
@@ -248,6 +247,8 @@ $(document).ready(function() {
 			});
 		});
 	});
+
+	$('#tuitionFeeReceivableModal').modal('show');
 
 });
 

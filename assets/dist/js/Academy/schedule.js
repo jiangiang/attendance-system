@@ -1,6 +1,10 @@
 /**
  *  js script for course
  */
+var create_url = "../create";
+var update_url = "../update"
+
+
 var post_url;
 var activation_url;
 var who_click;
@@ -26,7 +30,7 @@ $(document).ready(function () {
     });
 
     $('#btn_schedule_new').on('click', function () {
-        post_url = 'course_create';
+        post_url = create_url;
         who_click = 'NewCourse';
         $('#modalTitle').text(' New Schedule');
         $("#lessonVenue").prop('disabled', false);
@@ -42,7 +46,7 @@ $(document).ready(function () {
     // De-Activate
     $('#tbl_content_main').on('click', '.deactivate_schedule', function () {
 
-        activation_url = '../schedule_deactivate';
+        activation_url = '../delete';
         var activation_id = $(this).closest('tr').children('td#current_schedule_id').text();
 
         $('#activation_id').val(activation_id);
@@ -96,7 +100,7 @@ $(document).ready(function () {
 
             $.ajax({
                     type: 'POST',
-                    url: '../schedule_create',
+                    url: post_url,
                     data: formData,
                     dataType: 'json',
                     encode: true
@@ -139,7 +143,7 @@ $(document).ready(function () {
     });
 
     // detect input change, get the name from DB
-    $("#course_id").on("change", function () {
+    $("#class_id").on("change", function () {
         var ele = $(this).find('option:selected');
         var duration = ele.attr('data-duration');
         //alert(duration);
@@ -177,20 +181,20 @@ $(document).ready(function () {
 });
 
 function get_course() {
-    var UrlGetName = "../ajax_get_course/" + $("#instructor_id").val() + "/" + $("#venue_id").val();
-
-    $("#course_id").prop('disabled', true);
+    var UrlGetName = "../ajax_get_class/" + $("#instructor_id").val() + "/" + $("#venue_id").val();
+console.log( UrlGetName )
+    $("#class_id").prop('disabled', true);
 
     $.getJSON(UrlGetName, function (data) {
         console.log(data);
     }).done(function (data) {
-        $("#course_id").find('option').remove();
-        $("#course_id").append('<option value="" disabled="disabled" selected="selected"></option>');
+        $("#class_id").find('option').remove();
+        $("#class_id").append('<option value="" disabled="disabled" selected="selected"></option>');
         $.each(data, function (index, item) {
-            $("#course_id").append('<option value="' + item.id + '" data-duration="' + item.duration_minute + '">' + item.level_name + '</option>');
+            $("#class_id").append('<option value="' + item.id + '" data-duration="' + item.duration_minute + '">' + item.level_name + '</option>');
         });
-        $("#course_id").prop('disabled', false);
+        $("#class_id").prop('disabled', false);
     }).fail(function (data) {
-        $("#course_id").prop('disabled', false);
+        $("#class_id").prop('disabled', false);
     });
 }

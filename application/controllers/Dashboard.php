@@ -186,7 +186,7 @@ class Dashboard extends CI_Controller {
 		}
 	}
 
-	public function timetable_class() {
+	public function timetable_classes() {
 
 		if ($this -> session -> userdata('logged_in')) {
 			$venue_id = $this -> input -> post('venue_id');

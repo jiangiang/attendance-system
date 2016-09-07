@@ -7,13 +7,13 @@
 </style>
 
 <!-- Custom Page JScript -->
-<script src="<?php echo base_url(); ?>assets/dist/js/custom_student_log.js" type="text/javascript"></script>
+<script src="<?php echo base_url(); ?>assets/dist/js/student_log.js" type="text/javascript"></script>
 
 <form id="activationForm" name="activationForm" >
 	<input type="hidden" id="activationID" name="activationID">
 </form>
 
-<form id="studentLogFrm" name="studentLogFrm">
+<form id="studentLogForm" name="studentLogForm">
 	<input type="hidden" id="action" name="action" value="" />
 	<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="modal_student_log">
 		<div class="modal-dialog" style="margin-top: 2%;">
@@ -29,14 +29,14 @@
 				<div class="modal-body">
 					<div class="col-lg-12" style="padding-left: 0px; padding-right: 2px">
 						<div class="form-group">
-							<label>Search Name/ID</label> <input class="form-control" placeholder="Student Name/ID / Passport" id="stdSearch"
-								name="stdSearch" autocomplete="off">
-							<div id="stdSearchResult"></div>
+							<label>Search Name/ID</label> <input class="form-control" placeholder="Student Name/ID / Passport" id="studentSearch"
+								name="studentSearch" autocomplete="off">
+							<div id="studentSearchResult"></div>
 						</div>
 					</div>
 					<div class="col-lg-12" style="padding-left: 0px; padding-right: 2px">
 						<div class="form-group">
-							<label>Student Name</label> <input class="form-control" placeholder="Student Name" id="stdName" name="stdName"
+							<label>Student Name</label> <input class="form-control" placeholder="Student Name" id="studentName" name="studentName"
 								readonly="readonly" autocomplete="off">
 						</div>
 					</div>
